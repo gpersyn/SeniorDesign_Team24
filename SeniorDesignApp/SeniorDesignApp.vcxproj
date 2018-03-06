@@ -190,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="PrimeForm.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SeniorDesignApp.h" />
     <ClInclude Include="SeniorDesignAppDoc.h" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="PrimeForm.cpp" />
     <ClCompile Include="SeniorDesignApp.cpp" />
     <ClCompile Include="SeniorDesignAppDoc.cpp" />
     <ClCompile Include="SeniorDesignAppView.cpp" />
@@ -223,4 +225,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="SeniorDesignApp.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

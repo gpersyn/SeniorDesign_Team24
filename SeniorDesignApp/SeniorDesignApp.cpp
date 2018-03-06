@@ -10,6 +10,7 @@
 
 #include "SeniorDesignAppDoc.h"
 #include "SeniorDesignAppView.h"
+#include "PrimeForm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -103,7 +104,7 @@ BOOL CSeniorDesignAppApp::InitInstance()
 		IDR_MAINFRAME,
 		RUNTIME_CLASS(CSeniorDesignAppDoc),
 		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-		RUNTIME_CLASS(CSeniorDesignAppView));
+		RUNTIME_CLASS(CPrimeForm)); //was CSeniorDesignAppView
 	if (!pDocTemplate)
 		return FALSE;
 	AddDocTemplate(pDocTemplate);
