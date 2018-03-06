@@ -50,14 +50,31 @@ BOOL CSeniorDesignAppView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CSeniorDesignAppView drawing
 
-void CSeniorDesignAppView::OnDraw(CDC* /*pDC*/)
+void CSeniorDesignAppView::OnDraw(CDC* pDC)
 {
 	CSeniorDesignAppDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
 
-	// TODO: add draw code for native data here
+	//Table code
+	pDC->Rectangle(0, 0, 900, 50);
+	pDC->MoveTo(200,0); //First Col
+	pDC->LineTo(200,50);
+	pDC->TextOutW(10, 15, _T("SENSOR ID"));
+	pDC->MoveTo(300, 0);//Second Col
+	pDC->LineTo(300, 50);
+	pDC->TextOutW(210, 15, _T("STATUS"));
+	pDC->MoveTo(500, 0);//Third Col
+	pDC->LineTo(500, 50);
+	pDC->TextOutW(310, 15, _T("PROPANE VALUE")); 
+	pDC->MoveTo(700, 0);//Fourth Col
+	pDC->LineTo(700, 50);
+	pDC->TextOutW(510, 15, _T("METHANE VALUE"));
+	pDC->MoveTo(900, 0);//Fifth Col
+	pDC->LineTo(900, 50);
+	pDC->TextOutW(710, 15, _T("CO VALUE"));
+	
 }
 
 

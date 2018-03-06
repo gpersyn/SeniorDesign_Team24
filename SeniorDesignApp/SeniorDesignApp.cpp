@@ -104,7 +104,7 @@ BOOL CSeniorDesignAppApp::InitInstance()
 		IDR_MAINFRAME,
 		RUNTIME_CLASS(CSeniorDesignAppDoc),
 		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-		RUNTIME_CLASS(CPrimeForm)); //was CSeniorDesignAppView
+		RUNTIME_CLASS(CSeniorDesignAppView)); //was CSeniorDesignAppView //CPrimeForm
 	if (!pDocTemplate)
 		return FALSE;
 	AddDocTemplate(pDocTemplate);
