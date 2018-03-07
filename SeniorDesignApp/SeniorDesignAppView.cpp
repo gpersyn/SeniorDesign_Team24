@@ -12,6 +12,8 @@
 #include "SeniorDesignAppDoc.h"
 #include "SeniorDesignAppView.h"
 
+#include "AddUserDlg.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -26,6 +28,7 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	ON_COMMAND(ID_ADD_USER, &CSeniorDesignAppView::OnAddUser)
 END_MESSAGE_MAP()
 
 // CSeniorDesignAppView construction/destruction
@@ -57,23 +60,40 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
+	int num_Row = 10;
+	int num_Col = 5;
 	//Table code
-	pDC->Rectangle(0, 0, 900, 50);
-	pDC->MoveTo(200,0); //First Col
-	pDC->LineTo(200,50);
+	pDC->Rectangle(0, 0, 810, 50* num_Row);
+
+	CRect TableBodyRect;//Color Body
+	TableBodyRect.SetRect(0, 50, 810, (50 * num_Row)-1);
+	pDC->FillSolidRect(TableBodyRect, RGB(249, 248, 234));
+
+	CRect TableHeaderRect;//Color Header
+	TableHeaderRect.SetRect(0, 0, 810, 50);
+	pDC->FillSolidRect(TableHeaderRect, RGB(184, 231, 249));
+
+	for (int i = 1; i < num_Row; i++) { //row lines
+		pDC->MoveTo(0, 50*i); 
+		pDC->LineTo(810, 50*i);
+	}
+
+	pDC->MoveTo(120,0); //First Col
+	pDC->LineTo(120,50 * num_Row);
 	pDC->TextOutW(10, 15, _T("SENSOR ID"));
-	pDC->MoveTo(300, 0);//Second Col
-	pDC->LineTo(300, 50);
-	pDC->TextOutW(210, 15, _T("STATUS"));
-	pDC->MoveTo(500, 0);//Third Col
-	pDC->LineTo(500, 50);
-	pDC->TextOutW(310, 15, _T("PROPANE VALUE")); 
-	pDC->MoveTo(700, 0);//Fourth Col
-	pDC->LineTo(700, 50);
-	pDC->TextOutW(510, 15, _T("METHANE VALUE"));
-	pDC->MoveTo(900, 0);//Fifth Col
-	pDC->LineTo(900, 50);
-	pDC->TextOutW(710, 15, _T("CO VALUE"));
+	pDC->MoveTo(210, 0);//Second Col
+	pDC->LineTo(210, 50 * num_Row);
+	pDC->TextOutW(130, 15, _T("STATUS"));
+	pDC->MoveTo(410, 0);//Third Col
+	pDC->LineTo(410, 50 * num_Row);
+	pDC->TextOutW(220, 15, _T("PROPANE VALUE")); 
+	pDC->MoveTo(610, 0);//Fourth Col
+	pDC->LineTo(610, 50 * num_Row);
+	pDC->TextOutW(420, 15, _T("METHANE VALUE"));
+	pDC->MoveTo(810, 0);//Fifth Col
+	pDC->LineTo(810, 50 * num_Row);
+	pDC->TextOutW(620, 15, _T("CO VALUE"));
+	
 	
 }
 
@@ -119,3 +139,10 @@ CSeniorDesignAppDoc* CSeniorDesignAppView::GetDocument() const // non-debug vers
 
 
 // CSeniorDesignAppView message handlers
+
+
+void CSeniorDesignAppView::OnAddUser() //Add user button is pressed
+{
+	CAddUserDlg dlgAddUser; //Call Add User Dialog Box
+	dlgAddUser.DoModal();
+}

@@ -189,6 +189,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddUserDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="PrimeForm.h" />
     <ClInclude Include="Resource.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AddUserDlg.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="PrimeForm.cpp" />
     <ClCompile Include="SeniorDesignApp.cpp" />
