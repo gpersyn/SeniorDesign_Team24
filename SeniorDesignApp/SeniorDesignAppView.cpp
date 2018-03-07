@@ -13,6 +13,7 @@
 #include "SeniorDesignAppView.h"
 
 #include "AddUserDlg.h"
+#include "AddSensorDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +30,9 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND(ID_ADD_USER, &CSeniorDesignAppView::OnAddUser)
+	ON_COMMAND(ID_ADD_SENSOR, &CSeniorDesignAppView::OnAddSensor)
+	ON_COMMAND(ID_DEBUG_ADDROW, &CSeniorDesignAppView::OnDebugAddrow)
+	ON_COMMAND(ID_DEBUG_REMOVEROW, &CSeniorDesignAppView::OnDebugRemoverow)
 END_MESSAGE_MAP()
 
 // CSeniorDesignAppView construction/destruction
@@ -60,8 +64,6 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
-	int num_Row = 10;
-	int num_Col = 5;
 	//Table code
 	pDC->Rectangle(0, 0, 810, 50* num_Row);
 
@@ -145,4 +147,30 @@ void CSeniorDesignAppView::OnAddUser() //Add user button is pressed
 {
 	CAddUserDlg dlgAddUser; //Call Add User Dialog Box
 	dlgAddUser.DoModal();
+}
+
+
+void CSeniorDesignAppView::OnAddSensor()
+{
+	CAddSensorDlg dlgAddSensor; //Call Add Sensor Dialog Box
+	dlgAddSensor.DoModal();
+}
+
+
+void CSeniorDesignAppView::OnDebugAddrow()
+{
+	num_Row++;
+	Invalidate();
+	UpdateWindow();
+}
+
+
+void CSeniorDesignAppView::OnDebugRemoverow()
+{
+	if(num_Row > 2) {
+		num_Row--;
+		Invalidate();
+		UpdateWindow();
+	}
+	
 }

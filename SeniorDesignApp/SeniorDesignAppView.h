@@ -42,6 +42,15 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnAddUser();
+	afx_msg void OnAddSensor();
+
+//Custom Variables
+private:
+	int num_Row{ 2 }; //Number of rows in table
+	int num_Col = 5; //Number of cols in table
+public:
+	afx_msg void OnDebugAddrow();
+	afx_msg void OnDebugRemoverow();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

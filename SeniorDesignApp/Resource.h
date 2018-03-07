@@ -8,6 +8,7 @@
 #define IDR_SeniorDesignAppTYPE         130
 #define IDD_PRIMEFORM                   310
 #define IDD_DIALOG_ADD_USER             312
+#define IDD_DIALOG_ADD_SENSOR           314
 #define IDC_EDIT2                       1012
 #define IDC_LIST1                       1015
 #define IDC_EDIT_SENSOR_ID              1016
@@ -15,6 +16,8 @@
 #define IDC_RADIO2                      1019
 #define IDC_EDIT3                       1020
 #define IDC_EDIT4                       1021
+#define IDC_EDIT1                       1023
+#define IDC_COMBO1                      1024
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -24,9 +27,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        314
+#define _APS_NEXT_RESOURCE_VALUE        316
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
