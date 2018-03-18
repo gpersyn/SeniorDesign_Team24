@@ -14,6 +14,7 @@
 
 #include "AddUserDlg.h"
 #include "AddSensorDlg.h"
+#include "SerialDebugDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -33,6 +34,7 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_ADD_SENSOR, &CSeniorDesignAppView::OnAddSensor)
 	ON_COMMAND(ID_DEBUG_ADDROW, &CSeniorDesignAppView::OnDebugAddrow)
 	ON_COMMAND(ID_DEBUG_REMOVEROW, &CSeniorDesignAppView::OnDebugRemoverow)
+	ON_COMMAND(ID_DEBUG_SERIALDEBUG, &CSeniorDesignAppView::OnDebugSerialDebug)
 END_MESSAGE_MAP()
 
 // CSeniorDesignAppView construction/destruction
@@ -173,4 +175,11 @@ void CSeniorDesignAppView::OnDebugRemoverow()
 		UpdateWindow();
 	}
 	
+}
+
+
+void CSeniorDesignAppView::OnDebugSerialDebug()
+{
+	SerialDebugDlg dlgSerialDebug;
+	dlgSerialDebug.DoModal();
 }

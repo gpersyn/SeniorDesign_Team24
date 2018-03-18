@@ -51,6 +51,7 @@ private:
 public:
 	afx_msg void OnDebugAddrow();
 	afx_msg void OnDebugRemoverow();
+	afx_msg void OnDebugSerialDebug();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

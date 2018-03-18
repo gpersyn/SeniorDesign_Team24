@@ -48,6 +48,9 @@
     <ClInclude Include="AddSensorDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SerialDebugDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SeniorDesignApp.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AddSensorDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialDebugDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
