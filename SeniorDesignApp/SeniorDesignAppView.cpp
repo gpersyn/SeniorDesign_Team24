@@ -12,14 +12,26 @@
 #include "SeniorDesignAppDoc.h"
 #include "SeniorDesignAppView.h"
 
+//Custom Dialogs
 #include "AddUserDlg.h"
 #include "AddSensorDlg.h"
 #include "SerialDebugDlg.h"
+//Serial Port
+#include<iostream>
+using namespace std;
+#include<string>
+#include<stdlib.h>
+#include"SerialPort.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+//Serial Port Variables
+const int DataWidth = 8; //MAX_DATA_LENGTH
+char output[DataWidth]; 
+char incomingData[DataWidth];
+char *port = "\\\\.\\COM4";
 
 // CSeniorDesignAppView
 
@@ -35,7 +47,12 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_DEBUG_ADDROW, &CSeniorDesignAppView::OnDebugAddrow)
 	ON_COMMAND(ID_DEBUG_REMOVEROW, &CSeniorDesignAppView::OnDebugRemoverow)
 	ON_COMMAND(ID_DEBUG_SERIALDEBUG, &CSeniorDesignAppView::OnDebugSerialDebug)
+	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CSeniorDesignAppView::OnDebugLedswitch)
 END_MESSAGE_MAP()
+
+//Serial Port Code Here
+SerialPort arduino(port);
+
 
 // CSeniorDesignAppView construction/destruction
 
@@ -98,7 +115,9 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	pDC->LineTo(810, 50 * num_Row);
 	pDC->TextOutW(620, 15, _T("CO VALUE"));
 	
-	
+	//Serial Debug Test Code
+	CString TempDebugOutput = CString(output, DataWidth);
+	pDC->TextOutW(400, 400, TempDebugOutput);
 }
 
 
@@ -180,6 +199,46 @@ void CSeniorDesignAppView::OnDebugRemoverow()
 
 void CSeniorDesignAppView::OnDebugSerialDebug()
 {
-	SerialDebugDlg dlgSerialDebug;
-	dlgSerialDebug.DoModal();
+	//Open Modeless Dialog Box
+	SerialDebugDlg *dlgSerialDebug = new SerialDebugDlg(this);
+	dlgSerialDebug->Create(IDD_DIALOG_SERIAL_DEBUG,GetDesktopWindow());
+	dlgSerialDebug->ShowWindow(SW_SHOW);
+
+	dlgSerialDebug->m_SerialDebug_Read = _T("Sent!");
+	//Pass info from open Dialog box 
+	if (dlgSerialDebug->m_SerialDebug_Send.GetCheck() == BST_CHECKED) {
+		dlgSerialDebug->m_SerialDebug_Read = _T("Sent!");
+		m_SerialDebug_Write_View = dlgSerialDebug->m_SerialDebug_Write;
+	}
+
+
+	//m_SerialDebug_Send_View = dlgSerialDebug.m_SerialDebug_Send;
+	//IDOK
+	/*if (dlgSerialDebug.DoModal() == IDOK) {
+		m_SerialDebug_Write_View = dlgSerialDebug.m_SerialDebug_Write;
+		m_SerialDebug_Read_View = dlgSerialDebug.m_SerialDebug_Read;
+		Invalidate();
+		UpdateWindow();
+	}*/
+	//dlgSerialDebug->Create(CModeless:IDD);
+
+}
+
+void CSeniorDesignAppView::OnDebugLedswitch()
+{
+	if (arduino.isConnected()) {
+		/*CString data = _T("ACK");
+		char *charArray = new char[data.GetLength() + 1];
+		copy(data.Mid(0,0), data.Mid(data.GetLength() - 1, data.GetLength() - 1), charArray);
+		charArray[data.GetLength()] = '\n';*/
+
+		char *charArray = "ACK";
+
+		arduino.writeSerialPort(charArray, DataWidth);
+		arduino.readSerialPort(output, DataWidth);
+
+		Invalidate();
+		UpdateWindow();
+		charArray = " ";
+	}
 }

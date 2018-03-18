@@ -48,10 +48,16 @@ public:
 private:
 	int num_Row{ 2 }; //Number of rows in table
 	int num_Col = 5; //Number of cols in table
+	CString m_SerialDebug_Write_View{"Test"};
+	CString m_SerialDebug_Read_View;
+	CButton m_SerialDebug_Send_View; 
+
 public:
 	afx_msg void OnDebugAddrow();
 	afx_msg void OnDebugRemoverow();
 	afx_msg void OnDebugSerialDebug();
+	afx_msg void OnDebugLightswitch();
+	afx_msg void OnDebugLedswitch();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

@@ -21,20 +21,21 @@
 #define IDC_COMBO1                      1024
 #define IDC_TEXTBOX_SERIAL_WRITE        1024
 #define IDC_TEXTBOX_SERIAL_READ         1025
-#define IDC_BUTTON1                     1026
 #define IDC_SerialDebug_Send            1026
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
 #define ID_DEBUG_REMOVEROW              32774
 #define ID_DEBUG_SERIALDEBUG            32775
+#define ID_DEBUG_LIGHTSWITCH            32776
+#define ID_DEBUG_LEDSWITCH              32777
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        318
-#define _APS_NEXT_COMMAND_VALUE         32776
+#define _APS_NEXT_RESOURCE_VALUE        319
+#define _APS_NEXT_COMMAND_VALUE         32778
 #define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           311
 #endif

@@ -151,6 +151,7 @@ BEGIN
         MENUITEM "Add Row",                     ID_DEBUG_ADDROW
         MENUITEM "Remove Row",                  ID_DEBUG_REMOVEROW
         MENUITEM "Serial Debug",                ID_DEBUG_SERIALDEBUG
+        MENUITEM "LED SWITCH",                  ID_DEBUG_LEDSWITCH
     END
 END
 
