@@ -48,6 +48,7 @@ public:
 private:
 	int num_Row{ 2 }; //Number of rows in table
 	int num_Col = 5; //Number of cols in table
+	double table_size{ 1 }; //Multiplier used to determine size of table, Shouldn't be less than 1
 	CString m_SerialDebug_Write_View{"Test"};
 	CString m_SerialDebug_Read_View;
 	CButton m_SerialDebug_Send_View; 
@@ -58,6 +59,8 @@ public:
 	afx_msg void OnDebugSerialDebug();
 	afx_msg void OnDebugLightswitch();
 	afx_msg void OnDebugLedswitch();
+	afx_msg void OnButtonTablesizeIncrease();
+	afx_msg void OnButtonTablesizeDecrease();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

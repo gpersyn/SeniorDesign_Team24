@@ -48,6 +48,8 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_DEBUG_REMOVEROW, &CSeniorDesignAppView::OnDebugRemoverow)
 	ON_COMMAND(ID_DEBUG_SERIALDEBUG, &CSeniorDesignAppView::OnDebugSerialDebug)
 	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CSeniorDesignAppView::OnDebugLedswitch)
+	ON_COMMAND(ID_BUTTON_TABLESIZE_INCREASE, &CSeniorDesignAppView::OnButtonTablesizeIncrease)
+	ON_COMMAND(ID_BUTTON_TABLESIZE_DECREASE, &CSeniorDesignAppView::OnButtonTablesizeDecrease)
 END_MESSAGE_MAP()
 
 //Serial Port Code Here
@@ -83,41 +85,65 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
+	//Custom Font
+	CFont font;
+	VERIFY(font.CreateFont(
+		(20 * table_size),							//nHeight
+		0,							//nWidth
+		0,							//nEscapement
+		0,							//nOrientation
+		FW_NORMAL,					//nWeight
+		FALSE,						//bItalic
+		FALSE,						//bUnderline
+		0,							//cStrikeOut
+		ANSI_CHARSET,				//nCharSet
+		OUT_DEFAULT_PRECIS,			//nOutPrecision
+		CLIP_DEFAULT_PRECIS,		//nClipPrecision
+		DEFAULT_QUALITY,			//nQuality
+		DEFAULT_PITCH | FF_SWISS,	//nPitchAndFamily
+		L"Arial"));					//lpszFacename
+
+	CFont* def_font = pDC->SelectObject(&font); //Saves Old Font
+
+
 	//Table code
-	pDC->Rectangle(0, 0, 810, 50* num_Row);
+	pDC->Rectangle(0, 0, 810* table_size, 50 * table_size * num_Row);
 
 	CRect TableBodyRect;//Color Body
-	TableBodyRect.SetRect(0, 50, 810, (50 * num_Row)-1);
+	TableBodyRect.SetRect(0, 50, 810 * table_size, ((50 * num_Row)-1) * table_size);
 	pDC->FillSolidRect(TableBodyRect, RGB(249, 248, 234));
 
 	CRect TableHeaderRect;//Color Header
-	TableHeaderRect.SetRect(0, 0, 810, 50);
+	TableHeaderRect.SetRect(0, 0, 810 * table_size, 50 * table_size);
 	pDC->FillSolidRect(TableHeaderRect, RGB(184, 231, 249));
 
 	for (int i = 1; i < num_Row; i++) { //row lines
-		pDC->MoveTo(0, 50*i); 
-		pDC->LineTo(810, 50*i);
+		pDC->MoveTo(0, 50*i*table_size);
+		pDC->LineTo(810 * table_size, 50*i*table_size);
 	}
 
-	pDC->MoveTo(120,0); //First Col
-	pDC->LineTo(120,50 * num_Row);
-	pDC->TextOutW(10, 15, _T("SENSOR ID"));
-	pDC->MoveTo(210, 0);//Second Col
-	pDC->LineTo(210, 50 * num_Row);
-	pDC->TextOutW(130, 15, _T("STATUS"));
-	pDC->MoveTo(410, 0);//Third Col
-	pDC->LineTo(410, 50 * num_Row);
-	pDC->TextOutW(220, 15, _T("PROPANE VALUE")); 
-	pDC->MoveTo(610, 0);//Fourth Col
-	pDC->LineTo(610, 50 * num_Row);
-	pDC->TextOutW(420, 15, _T("METHANE VALUE"));
-	pDC->MoveTo(810, 0);//Fifth Col
-	pDC->LineTo(810, 50 * num_Row);
-	pDC->TextOutW(620, 15, _T("CO VALUE"));
+	pDC->MoveTo(120 * table_size,0); //First Col
+	pDC->LineTo(120 * table_size,50 * num_Row * table_size);
+	pDC->TextOutW(10 * table_size, 15 * table_size, _T("SENSOR ID"));
+	pDC->MoveTo(210 * table_size, 0);//Second Col
+	pDC->LineTo(210 * table_size, 50 * num_Row * table_size);
+	pDC->TextOutW(130 * table_size, 15 * table_size, _T("STATUS"));
+	pDC->MoveTo(410 * table_size, 0);//Third Col
+	pDC->LineTo(410 * table_size, 50 * num_Row * table_size);
+	pDC->TextOutW(220 * table_size, 15 * table_size, _T("PROPANE VALUE"));
+	pDC->MoveTo(610 * table_size, 0);//Fourth Col
+	pDC->LineTo(610 * table_size, 50 * num_Row * table_size);
+	pDC->TextOutW(420 * table_size, 15 * table_size, _T("METHANE VALUE"));
+	pDC->MoveTo(810 * table_size, 0);//Fifth Col
+	pDC->LineTo(810 * table_size, 50 * num_Row * table_size);
+	pDC->TextOutW(620 * table_size, 15 * table_size, _T("CO VALUE"));
 	
 	//Serial Debug Test Code
 	CString TempDebugOutput = CString(output, DataWidth);
 	pDC->TextOutW(400, 400, TempDebugOutput);
+
+	//DrawText Test
+	pDC->SelectObject(def_font); //Sets Font back to old Font
 }
 
 
@@ -240,5 +266,25 @@ void CSeniorDesignAppView::OnDebugLedswitch()
 		Invalidate();
 		UpdateWindow();
 		charArray = " ";
+	}
+}
+
+
+void CSeniorDesignAppView::OnButtonTablesizeIncrease()
+{
+	if (table_size < 2.5) {
+		table_size = table_size + 0.25;
+		Invalidate();
+		UpdateWindow();
+	}
+}
+
+
+void CSeniorDesignAppView::OnButtonTablesizeDecrease()
+{
+	if (table_size > 1) {
+		table_size = table_size - 0.25;
+		Invalidate();
+		UpdateWindow();
 	}
 }
