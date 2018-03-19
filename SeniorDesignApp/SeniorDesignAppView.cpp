@@ -138,6 +138,9 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	pDC->LineTo(810 * table_size, 50 * num_Row * table_size);
 	pDC->TextOutW(620 * table_size, 15 * table_size, _T("CO VALUE"));
 	
+	//Reset Text Background Color
+	pDC->SetBkMode(TRANSPARENT);
+
 	//Serial Debug Test Code
 	CString TempDebugOutput = CString(output, DataWidth);
 	pDC->TextOutW(400, 400, TempDebugOutput);
