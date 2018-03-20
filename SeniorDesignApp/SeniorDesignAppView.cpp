@@ -28,8 +28,8 @@ using namespace std;
 #endif
 
 //Serial Port Variables
-const int DataWidth = 8; //MAX_DATA_LENGTH
-char output[DataWidth]; 
+const int DataWidth = 12; //MAX_DATA_LENGTH
+char output[DataWidth];
 char incomingData[DataWidth];
 char *port = "\\\\.\\COM4";
 
@@ -113,14 +113,24 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	TableBodyRect.SetRect(0, 50, 810 * table_size, ((50 * num_Row)-1) * table_size);
 	pDC->FillSolidRect(TableBodyRect, RGB(249, 248, 234));
 
-	CRect TableHeaderRect;//Color Header
-	TableHeaderRect.SetRect(0, 0, 810 * table_size, 50 * table_size);
-	pDC->FillSolidRect(TableHeaderRect, RGB(184, 231, 249));
 
 	for (int i = 1; i < num_Row; i++) { //row lines
 		pDC->MoveTo(0, 50*i*table_size);
 		pDC->LineTo(810 * table_size, 50*i*table_size);
+		//Write Sensor Values
+		DecodeSerialInput();
+		if (i == 1) {
+			pDC->TextOutW(10 * table_size, (50 * i * table_size) + (15 * table_size), Sensor_ID); //Sensor ID
+			pDC->TextOutW(130 * table_size, (50 * i * table_size) + (15 * table_size), Sensor_Status); //Status
+			pDC->TextOutW(220 * table_size, (50 * i * table_size) + (15 * table_size), CO_Value); //CO
+			pDC->TextOutW(420 * table_size, (50 * i * table_size) + (15 * table_size), Methane_Value); //Methane
+			pDC->TextOutW(620 * table_size, (50 * i * table_size) + (15 * table_size), Propane_Value); //Propane
+		}
 	}
+
+	CRect TableHeaderRect;//Color Header
+	TableHeaderRect.SetRect(0, 0, 810 * table_size, 50 * table_size);
+	pDC->FillSolidRect(TableHeaderRect, RGB(184, 231, 249));
 
 	pDC->MoveTo(120 * table_size,0); //First Col
 	pDC->LineTo(120 * table_size,50 * num_Row * table_size);
@@ -130,19 +140,19 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	pDC->TextOutW(130 * table_size, 15 * table_size, _T("STATUS"));
 	pDC->MoveTo(410 * table_size, 0);//Third Col
 	pDC->LineTo(410 * table_size, 50 * num_Row * table_size);
-	pDC->TextOutW(220 * table_size, 15 * table_size, _T("PROPANE VALUE"));
+	pDC->TextOutW(220 * table_size, 15 * table_size, _T("CO VALUE"));
 	pDC->MoveTo(610 * table_size, 0);//Fourth Col
 	pDC->LineTo(610 * table_size, 50 * num_Row * table_size);
 	pDC->TextOutW(420 * table_size, 15 * table_size, _T("METHANE VALUE"));
 	pDC->MoveTo(810 * table_size, 0);//Fifth Col
 	pDC->LineTo(810 * table_size, 50 * num_Row * table_size);
-	pDC->TextOutW(620 * table_size, 15 * table_size, _T("CO VALUE"));
+	pDC->TextOutW(620 * table_size, 15 * table_size, _T("PROPANE VALUE"));
 	
 	//Reset Text Background Color
 	pDC->SetBkMode(TRANSPARENT);
 
 	//Serial Debug Test Code
-	CString TempDebugOutput = CString(output, DataWidth);
+	CString TempDebugOutput = CString(incomingData, DataWidth);
 	pDC->TextOutW(400, 400, TempDebugOutput);
 
 	//DrawText Test
@@ -261,14 +271,13 @@ void CSeniorDesignAppView::OnDebugLedswitch()
 		copy(data.Mid(0,0), data.Mid(data.GetLength() - 1, data.GetLength() - 1), charArray);
 		charArray[data.GetLength()] = '\n';*/
 
-		char *charArray = "ACK";
+		charInputArray = "ACK";
 
-		arduino.writeSerialPort(charArray, DataWidth);
-		arduino.readSerialPort(output, DataWidth);
+		arduino.writeSerialPort(charInputArray, DataWidth);
+		arduino.readSerialPort(incomingData, DataWidth);
 
 		Invalidate();
 		UpdateWindow();
-		charArray = " ";
 	}
 }
 
@@ -290,4 +299,47 @@ void CSeniorDesignAppView::OnButtonTablesizeDecrease()
 		Invalidate();
 		UpdateWindow();
 	}
+}
+
+void CSeniorDesignAppView::DecodeSerialInput() {
+	//Initialize Temp C Array Variables
+	char Sensor_ID_Temp[3]{ 0,0,0 };
+	char CO_Value_Temp[3]{ 0, 0, 0 };
+	char Methane_Value_Temp[3]{ 0, 0, 0 };
+	char Propane_Value_Temp[3]{ 0, 0, 0 };
+
+	//Get Sensor ID from Serial Input
+	int i;
+	int j = 0;
+	for (i = 0; i < 3; i++) {
+		Sensor_ID_Temp[j] = incomingData[i];
+		j++;
+	}
+	j = 0;
+	//Get CO Values
+	for (i = 3; i < 6; i++) {
+		CO_Value_Temp[j] = incomingData[i];
+		j++;
+	}
+	j = 0;
+	//Get Methane Values
+	for (i = 6; i < 9; i++) {
+		Methane_Value_Temp[j] = incomingData[i];
+		j++;
+	}
+	j = 0;
+	//Get Propane Values
+	for (i = 9; i < 12; i++) {
+		Propane_Value_Temp[j] = incomingData[i];
+		j++;
+	}
+
+	//Convert Sensor Values to CSTRING
+	Sensor_ID = CString(Sensor_ID_Temp, 3);
+	CO_Value = CString(CO_Value_Temp, 3);
+	Methane_Value = CString(Methane_Value_Temp, 3);
+	Propane_Value = CString(Propane_Value_Temp, 3);
+
+	//Check if sensor is working (NOT ADDED YET)
+	Sensor_Status = "Yes"; //Temp
 }

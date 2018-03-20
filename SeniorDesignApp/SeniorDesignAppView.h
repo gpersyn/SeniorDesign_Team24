@@ -52,6 +52,14 @@ private:
 	CString m_SerialDebug_Write_View{"Test"};
 	CString m_SerialDebug_Read_View;
 	CButton m_SerialDebug_Send_View; 
+	char *charInputArray;
+
+	//Sensor Value Variables
+	CString Sensor_ID;
+	CString Sensor_Status;
+	CString CO_Value;
+	CString Methane_Value;
+	CString Propane_Value;
 
 public:
 	afx_msg void OnDebugAddrow();
@@ -61,6 +69,9 @@ public:
 	afx_msg void OnDebugLedswitch();
 	afx_msg void OnButtonTablesizeIncrease();
 	afx_msg void OnButtonTablesizeDecrease();
+
+	//Custom Functions
+	void DecodeSerialInput();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp
