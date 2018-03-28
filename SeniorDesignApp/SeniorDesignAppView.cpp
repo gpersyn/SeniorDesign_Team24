@@ -1,4 +1,4 @@
-
+﻿
 // SeniorDesignAppView.cpp : implementation of the CSeniorDesignAppView class
 //
 
@@ -18,12 +18,16 @@
 #include "SerialDebugDlg.h"
 #include "TestSensorDlg.h"
 #include "ConfigSensorDlg.h"
+#include "TestSQLDatabase.h"
 //Serial Port
 #include<iostream>
 using namespace std;
 #include<string>
 #include<stdlib.h>
 #include"SerialPort.h"
+//For Database
+#include "odbcinst.h"
+#include "afxdb.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -54,6 +58,7 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_BUTTON_TABLESIZE_DECREASE, &CSeniorDesignAppView::OnButtonTablesizeDecrease)
 	ON_COMMAND(ID_SENSORS_CONFIGURESENSOR, &CSeniorDesignAppView::OnSensorsConfiguresensor)
 	ON_COMMAND(ID_SENSORS_TESTSENSOR, &CSeniorDesignAppView::OnSensorsTestsensor)
+	ON_COMMAND(ID_DEBUG_SQLDATABASE, &CSeniorDesignAppView::OnDebugSqldatabase)
 END_MESSAGE_MAP()
 
 //Serial Port Code Here
@@ -364,4 +369,11 @@ void CSeniorDesignAppView::OnSensorsTestsensor()
 {
 	TestSensorDlg TestSensorDialog; //Call Test Sensor Dialog Box
 	TestSensorDialog.DoModal();
+}
+
+
+void CSeniorDesignAppView::OnDebugSqldatabase() //When test SQL button pressed in menu call dialog box
+{
+	TestSQLDatabase TestDatabase;
+	TestDatabase.DoModal();
 }

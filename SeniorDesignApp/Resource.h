@@ -13,6 +13,7 @@
 #define IDD_DIALOG_TEST_SENSOR          319
 #define IDD_DIALOG_Config_Sensor        321
 #define IDD_DIALOG_CONFIG_SENSOR        321
+#define IDD_DIALOG_TEST_SQL             323
 #define IDC_EDIT2                       1012
 #define IDC_CONFIG_METHANE_THRESHOLD    1013
 #define IDC_CONFIG_PROPANE_THRESHOLD    1014
@@ -27,11 +28,13 @@
 #define IDC_TEXTBOX_SERIAL_WRITE        1024
 #define IDC_TEXTBOX_SERIAL_READ         1025
 #define IDC_SerialDebug_Send            1026
-#define IDC_CONFIG_SENSOR_ID            1033
 #define IDC_CONFIG_CO_THRESHOLD         1034
 #define IDC_RADIO_CONFIG_SENSOR_STATE_ON 1035
 #define IDC_RADIO_CONFIG_SENSOR_STATE_OFF 1036
 #define IDC_EDIT5                       1037
+#define IDC_BUTTON1                     1038
+#define IDC_BUTTON_WRITE_DATABASE_TEST  1038
+#define IDC_BUTTON2                     1039
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -45,14 +48,15 @@
 #define ID_USERS_VIEWUSERS              32780
 #define ID_SENSORS_CONFIGURESENSOR      32781
 #define ID_SENSORS_TESTSENSOR           32782
+#define ID_DEBUG_SQLDATABASE            32783
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        323
-#define _APS_NEXT_COMMAND_VALUE         32783
-#define _APS_NEXT_CONTROL_VALUE         1038
+#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_COMMAND_VALUE         32784
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

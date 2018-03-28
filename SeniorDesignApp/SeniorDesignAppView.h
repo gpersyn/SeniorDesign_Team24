@@ -74,6 +74,7 @@ public:
 	void DecodeSerialInput();
 	afx_msg void OnSensorsConfiguresensor();
 	afx_msg void OnSensorsTestsensor();
+	afx_msg void OnDebugSqldatabase();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp
