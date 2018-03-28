@@ -72,6 +72,8 @@ public:
 
 	//Custom Functions
 	void DecodeSerialInput();
+	afx_msg void OnSensorsConfiguresensor();
+	afx_msg void OnSensorsTestsensor();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

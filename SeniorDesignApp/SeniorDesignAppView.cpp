@@ -16,6 +16,8 @@
 #include "AddUserDlg.h"
 #include "AddSensorDlg.h"
 #include "SerialDebugDlg.h"
+#include "TestSensorDlg.h"
+#include "ConfigSensorDlg.h"
 //Serial Port
 #include<iostream>
 using namespace std;
@@ -50,6 +52,8 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CSeniorDesignAppView::OnDebugLedswitch)
 	ON_COMMAND(ID_BUTTON_TABLESIZE_INCREASE, &CSeniorDesignAppView::OnButtonTablesizeIncrease)
 	ON_COMMAND(ID_BUTTON_TABLESIZE_DECREASE, &CSeniorDesignAppView::OnButtonTablesizeDecrease)
+	ON_COMMAND(ID_SENSORS_CONFIGURESENSOR, &CSeniorDesignAppView::OnSensorsConfiguresensor)
+	ON_COMMAND(ID_SENSORS_TESTSENSOR, &CSeniorDesignAppView::OnSensorsTestsensor)
 END_MESSAGE_MAP()
 
 //Serial Port Code Here
@@ -342,4 +346,22 @@ void CSeniorDesignAppView::DecodeSerialInput() {
 
 	//Check if sensor is working (NOT ADDED YET)
 	Sensor_Status = "Yes"; //Temp
+}
+
+void CSeniorDesignAppView::OnSensorsConfiguresensor()
+{
+	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
+	ConfigureSensorDialog.DoModal();
+	//Use Return Values
+	double test1 = ConfigureSensorDialog.Sensor_ID;
+	int test2 = ConfigureSensorDialog.Methane_Threshold_Value;
+	
+	
+}
+
+
+void CSeniorDesignAppView::OnSensorsTestsensor()
+{
+	TestSensorDlg TestSensorDialog; //Call Test Sensor Dialog Box
+	TestSensorDialog.DoModal();
 }

@@ -10,7 +10,12 @@
 #define IDD_DIALOG_ADD_USER             312
 #define IDD_DIALOG_ADD_SENSOR           314
 #define IDD_DIALOG_SERIAL_DEBUG         316
+#define IDD_DIALOG_TEST_SENSOR          319
+#define IDD_DIALOG_Config_Sensor        321
+#define IDD_DIALOG_CONFIG_SENSOR        321
 #define IDC_EDIT2                       1012
+#define IDC_CONFIG_METHANE_THRESHOLD    1013
+#define IDC_CONFIG_PROPANE_THRESHOLD    1014
 #define IDC_LIST1                       1015
 #define IDC_EDIT_SENSOR_ID              1016
 #define IDC_RADIO1                      1018
@@ -22,6 +27,11 @@
 #define IDC_TEXTBOX_SERIAL_WRITE        1024
 #define IDC_TEXTBOX_SERIAL_READ         1025
 #define IDC_SerialDebug_Send            1026
+#define IDC_CONFIG_SENSOR_ID            1033
+#define IDC_CONFIG_CO_THRESHOLD         1034
+#define IDC_RADIO_CONFIG_SENSOR_STATE_ON 1035
+#define IDC_RADIO_CONFIG_SENSOR_STATE_OFF 1036
+#define IDC_EDIT5                       1037
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -32,14 +42,17 @@
 #define ID_BUTTON_TABLESIZE_INCREASE    32778
 #define ID_BUTTON32779                  32779
 #define ID_BUTTON_TABLESIZE_DECREASE    32779
+#define ID_USERS_VIEWUSERS              32780
+#define ID_SENSORS_CONFIGURESENSOR      32781
+#define ID_SENSORS_TESTSENSOR           32782
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        319
-#define _APS_NEXT_COMMAND_VALUE         32780
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_RESOURCE_VALUE        323
+#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
