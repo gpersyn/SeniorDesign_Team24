@@ -357,11 +357,16 @@ void CSeniorDesignAppView::OnSensorsConfiguresensor()
 {
 	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
 	ConfigureSensorDialog.DoModal();
+
 	//Use Return Values
-	double test1 = ConfigureSensorDialog.Sensor_ID;
+	CString test3 = ConfigureSensorDialog.m_Config_SensorID;
 	int test2 = ConfigureSensorDialog.Methane_Threshold_Value;
-	
-	
+
+	CStringA test1 = "Hi";
+	char *OutputSerial;
+	OutputSerial = test1.GetBuffer(test1.GetLength()); //convert to char array
+
+	arduino.writeSerialPort(OutputSerial, DataWidth);
 }
 
 
