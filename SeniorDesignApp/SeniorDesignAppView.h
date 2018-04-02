@@ -75,6 +75,8 @@ public:
 	afx_msg void OnSensorsConfiguresensor();
 	afx_msg void OnSensorsTestsensor();
 	afx_msg void OnDebugSqldatabase();
+	afx_msg void OnUsersDeleteuser();
+	afx_msg void OnUsersViewusers();
 };
 
 #ifndef _DEBUG  // debug version in SeniorDesignAppView.cpp

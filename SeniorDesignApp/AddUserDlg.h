@@ -14,7 +14,7 @@ public:
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_DIALOG_ADD_USER};
+	enum { IDD = IDD_DIALOG_ADD_USER}; 
 #endif
 
 protected:
@@ -22,15 +22,14 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-
-	afx_msg void OnBnClickedAddUser();
 	CString m_UserName;
 	CString m_FirstName;
 	CString m_LastName;
-	int m_PhoneNumber;
+	long m_PhoneNumber;
 	CString m_Email;
 	int m_UserID;
 	CListCtrl m_Database_View;
 	afx_msg void OnBnClickedRefreshTable();
 	void ResetListControl();
+	bool m_ADMIN_ON;
 };

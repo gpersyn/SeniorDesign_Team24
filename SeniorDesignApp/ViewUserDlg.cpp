@@ -1,60 +1,48 @@
-﻿// AddUserDlg.cpp : implementation file
+﻿// AddSensorDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "SeniorDesignApp.h"
-#include "AddUserDlg.h"
+#include "ViewUserDlg.h"
 #include "afxdialogex.h"
 //For Database
 #include "odbcinst.h"
 #include "afxdb.h"
 
-// CAddUserDlg dialog
 
-IMPLEMENT_DYNAMIC(CAddUserDlg, CDialogEx)
+// CAddSensorDlg dialog
 
-CAddUserDlg::CAddUserDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(IDD_DIALOG_ADD_USER, pParent)
-	, m_UserName(_T(""))
-	, m_FirstName(_T(""))
-	, m_LastName(_T(""))
-	, m_PhoneNumber(0)
-	, m_Email(_T(""))
-	, m_UserID(0)
-	, m_ADMIN_ON(false)
+IMPLEMENT_DYNAMIC(ViewUserDlg, CDialogEx)
+
+ViewUserDlg::ViewUserDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(IDD_DIALOG_VIEW_USERS, pParent)
 {
 
 }
 
-CAddUserDlg::~CAddUserDlg()
+ViewUserDlg::~ViewUserDlg()
 {
 }
 
-void CAddUserDlg::DoDataExchange(CDataExchange* pDX)
+void ViewUserDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_USER_NAME, m_UserName);
-	DDX_Text(pDX, IDC_FIRST_NAME, m_FirstName);
-	DDX_Text(pDX, IDC_LAST_NAME, m_LastName);
-	DDX_Text(pDX, IDC_PHONE_NUMBER, m_PhoneNumber);
-	DDX_Text(pDX, IDC_EMAIL, m_Email);
-	DDX_Text(pDX, IDC_USER_ID, m_UserID);
-	DDX_Control(pDX, IDC_LIST_DATABASE, m_Database_View);
+	DDX_Control(pDX, IDC_LIST_VIEW_USERS, m_Database_View);
 }
 
 
-BEGIN_MESSAGE_MAP(CAddUserDlg, CDialogEx)
-	ON_BN_CLICKED(IDC_REFRESH_TABLE, &CAddUserDlg::OnBnClickedRefreshTable)
+BEGIN_MESSAGE_MAP(ViewUserDlg, CDialogEx)
+	ON_BN_CLICKED(IDC_BUTTON_REFRESH, &ViewUserDlg::OnBnClickedButtonRefresh)
 END_MESSAGE_MAP()
 
 
-// CAddUserDlg message handlers
+// CAddSensorDlg message handlers
 
-void CAddUserDlg::OnBnClickedRefreshTable() //Refreshes Database View
+void ViewUserDlg::OnBnClickedButtonRefresh()
 {
 	CDatabase database;
 	CString SqlString;
-	CString strID, strUserName, strUserType,strFirstName, strLastName, strPhoneNumber, strEmailAddress;
+	CString strID, strUserName, strUserType, strFirstName, strLastName, strPhoneNumber, strEmailAddress;
 	CString sDriver = L"SQL Server";
 	CString sDsn;
 	CString sMc = L"GARRETT-DESKTOP";
@@ -97,7 +85,7 @@ void CAddUserDlg::OnBnClickedRefreshTable() //Refreshes Database View
 	m_Database_View.SetColumnWidth(3, 100);
 	m_Database_View.SetColumnWidth(4, 100);
 	m_Database_View.SetColumnWidth(5, 100);
-	m_Database_View.SetColumnWidth(6, 100);
+	m_Database_View.SetColumnWidth(6, 200);
 
 	// Loop through each record
 	while (!recset.IsEOF()) {
@@ -131,7 +119,7 @@ void CAddUserDlg::OnBnClickedRefreshTable() //Refreshes Database View
 	END_CATCH;
 }
 
-void CAddUserDlg::ResetListControl() {
+void ViewUserDlg::ResetListControl() {
 	m_Database_View.DeleteAllItems();
 	int iNbrOfColumns;
 	CHeaderCtrl* pHeader = (CHeaderCtrl*)m_Database_View.GetDlgItem(0);

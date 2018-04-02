@@ -19,6 +19,8 @@
 #include "TestSensorDlg.h"
 #include "ConfigSensorDlg.h"
 #include "TestSQLDatabase.h"
+#include "DeleteUserDlg.h"
+#include "ViewUserDlg.h"
 //Serial Port
 #include<iostream>
 using namespace std;
@@ -59,6 +61,8 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	ON_COMMAND(ID_SENSORS_CONFIGURESENSOR, &CSeniorDesignAppView::OnSensorsConfiguresensor)
 	ON_COMMAND(ID_SENSORS_TESTSENSOR, &CSeniorDesignAppView::OnSensorsTestsensor)
 	ON_COMMAND(ID_DEBUG_SQLDATABASE, &CSeniorDesignAppView::OnDebugSqldatabase)
+	ON_COMMAND(ID_USERS_DELETEUSER, &CSeniorDesignAppView::OnUsersDeleteuser)
+	ON_COMMAND(ID_USERS_VIEWUSERS, &CSeniorDesignAppView::OnUsersViewusers)
 END_MESSAGE_MAP()
 
 //Serial Port Code Here
@@ -215,7 +219,55 @@ CSeniorDesignAppDoc* CSeniorDesignAppView::GetDocument() const // non-debug vers
 void CSeniorDesignAppView::OnAddUser() //Add user button is pressed
 {
 	CAddUserDlg dlgAddUser; //Call Add User Dialog Box
-	dlgAddUser.DoModal();
+	if (dlgAddUser.DoModal() == true) {
+		int temp_UserID = dlgAddUser.m_UserID;
+		CString temp_UserName = dlgAddUser.m_UserName;
+		CString temp_UserType;
+		if (dlgAddUser.m_ADMIN_ON) {
+			temp_UserType = L"ADMIN";
+		}
+		else {
+			temp_UserType = L"GENERAL";
+		}
+		CString temp_FirstName = dlgAddUser.m_FirstName;
+		CString temp_LastName = dlgAddUser.m_LastName;
+		long temp_PhoneNumber = dlgAddUser.m_PhoneNumber;
+		CString temp_Email_Addresss = dlgAddUser.m_Email;
+
+		//Delete User from database
+		CDatabase database;
+		CString SqlString;
+		CString strID, strName, strAge;
+		CString sDriver = L"SQL Server";
+		CString sDsn;
+		CString sMc = L"GARRETT-DESKTOP";
+		CString sFile = L"AppTest1";
+		// You must change above path if it's different
+		int iRec = 0;
+
+		// Build ODBC connection string
+		//sDsn.Format(L"ODBC;DRIVER={%s};DSN='';DBQ=%s", sDriver, sFile);
+		//sDsn = L"Data Source=GARRETT-DESKTOP;Initial Catalog=AppTest1;Integrated Security=True";
+		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
+
+		TRY{
+			// Open the database
+			database.Open(NULL,false,false,sDsn);
+		//if (database.Open(NULL,false,false,sDsn))
+		//AfxMessageBox("database opened!");
+		//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
+		SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (%d,'%s','%s','%s','%s',%u,'%s')", temp_UserID, temp_UserName, temp_UserType, temp_FirstName, temp_LastName, temp_PhoneNumber, temp_Email_Addresss);
+		//SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
+		//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
+		database.ExecuteSQL(SqlString);
+		// Close the database
+		database.Close();
+		}CATCH(CDBException, e) {
+			// If a database exception occured, show error msg
+			//AfxMessageBox(L"Database error: " + e→m_strError);
+		}
+		END_CATCH;
+	}
 }
 
 
@@ -381,4 +433,54 @@ void CSeniorDesignAppView::OnDebugSqldatabase() //When test SQL button pressed i
 {
 	TestSQLDatabase TestDatabase;
 	TestDatabase.DoModal();
+}
+
+
+void CSeniorDesignAppView::OnUsersDeleteuser() //When the Delete User Button is pressed on the menu bar
+{
+	DeleteUserDlg DeleteUser;
+	DeleteUser.DoModal();
+	int Temp_UserID = DeleteUser.m_UserID;
+
+	//Delete User from database
+	CDatabase database;
+	CString SqlString;
+	CString strID, strName, strAge;
+	CString sDriver = L"SQL Server";
+	CString sDsn;
+	CString sMc = L"GARRETT-DESKTOP";
+	CString sFile = L"AppTest1";
+	// You must change above path if it's different
+	int iRec = 0;
+
+	// Build ODBC connection string
+	//sDsn.Format(L"ODBC;DRIVER={%s};DSN='';DBQ=%s", sDriver, sFile);
+	//sDsn = L"Data Source=GARRETT-DESKTOP;Initial Catalog=AppTest1;Integrated Security=True";
+	sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
+
+	TRY{
+		// Open the database
+		database.Open(NULL,false,false,sDsn);
+	//if (database.Open(NULL,false,false,sDsn))
+	//AfxMessageBox("database opened!");
+	//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
+	//SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (%d,'%s','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')", m_UserID,L"Johny");
+	SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
+	//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
+	database.ExecuteSQL(SqlString);
+	// Close the database
+	database.Close();
+	}CATCH(CDBException, e) {
+		// If a database exception occured, show error msg
+		//AfxMessageBox(L"Database error: " + e→m_strError);
+	}
+	END_CATCH;
+}
+
+
+void CSeniorDesignAppView::OnUsersViewusers() //When the view user button is pressed on the menu bar
+{
+	ViewUserDlg ViewUser;
+	ViewUser.DoModal();
+	
 }
