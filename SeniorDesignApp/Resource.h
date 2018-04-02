@@ -20,21 +20,35 @@
 #define IDC_LIST1                       1015
 #define IDC_EDIT_SENSOR_ID              1016
 #define IDC_RADIO1                      1018
+#define IDC_RADIO_ADMIN                 1018
 #define IDC_RADIO2                      1019
+#define IDC_RADIO_GENERAL               1019
 #define IDC_EDIT3                       1020
 #define IDC_EDIT4                       1021
 #define IDC_EDIT1                       1023
 #define IDC_COMBO1                      1024
 #define IDC_TEXTBOX_SERIAL_WRITE        1024
+#define IDC_FIRST_NAME                  1024
 #define IDC_TEXTBOX_SERIAL_READ         1025
+#define IDC_LAST_NAME                   1025
 #define IDC_SerialDebug_Send            1026
+#define IDC_PHONE_NUMBER                1026
+#define IDC_EMAIL                       1027
+#define IDC_FIRST_NAME2                 1028
+#define IDC_USER_ID                     1028
 #define IDC_CONFIG_CO_THRESHOLD         1034
 #define IDC_RADIO_CONFIG_SENSOR_STATE_ON 1035
 #define IDC_RADIO_CONFIG_SENSOR_STATE_OFF 1036
 #define IDC_EDIT5                       1037
 #define IDC_BUTTON1                     1038
 #define IDC_BUTTON_WRITE_DATABASE_TEST  1038
+#define IDC_ADD_USER                    1038
 #define IDC_BUTTON2                     1039
+#define IDC_BUTTON_READ_DATABASE_TEST   1039
+#define IDC_REFRESH_TABLE               1039
+#define IDC_LIST_SQL_TEST               1043
+#define IDC_USER_NAME                   1045
+#define IDC_LIST_DATABASE               1046
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -54,9 +68,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_RESOURCE_VALUE        326
 #define _APS_NEXT_COMMAND_VALUE         32784
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

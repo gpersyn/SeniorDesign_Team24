@@ -1,4 +1,5 @@
 #pragma once
+#include "afxcmn.h"
 
 
 // CAddUserDlg dialog
@@ -20,4 +21,16 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+public:
+
+	afx_msg void OnBnClickedAddUser();
+	CString m_UserName;
+	CString m_FirstName;
+	CString m_LastName;
+	int m_PhoneNumber;
+	CString m_Email;
+	int m_UserID;
+	CListCtrl m_Database_View;
+	afx_msg void OnBnClickedRefreshTable();
+	void ResetListControl();
 };
