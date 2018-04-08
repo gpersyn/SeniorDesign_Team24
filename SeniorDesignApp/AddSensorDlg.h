@@ -20,4 +20,8 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+public:
+	int m_Sensor_ID;
+	CString m_Building_Name;
+	int m_Room_Number;
 };

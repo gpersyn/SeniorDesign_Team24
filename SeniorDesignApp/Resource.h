@@ -18,16 +18,21 @@
 #define IDD_DIALOG_DELETE_USERS         328
 #define IDD_DIALOG1                     329
 #define IDD_DIALOG_DELETE_SENSOR        329
+#define IDD_DIALOG_VIEW_ALERTS          332
 #define IDC_EDIT2                       1012
+#define IDC_EDIT_BUILDING               1012
 #define IDC_CONFIG_METHANE_THRESHOLD    1013
 #define IDC_CONFIG_PROPANE_THRESHOLD    1014
 #define IDC_LIST1                       1015
+#define IDC_LIST_VIEW_SENSORS           1015
+#define IDC_LIST_ALERTS                 1015
 #define IDC_EDIT_SENSOR_ID              1016
 #define IDC_RADIO1                      1018
 #define IDC_RADIO_ADMIN                 1018
 #define IDC_RADIO2                      1019
 #define IDC_RADIO_GENERAL               1019
 #define IDC_EDIT3                       1020
+#define IDC_EDIT_ROOM                   1020
 #define IDC_EDIT4                       1021
 #define IDC_EDIT1                       1023
 #define IDC_COMBO1                      1024
@@ -70,13 +75,17 @@
 #define ID_DEBUG_SQLDATABASE            32783
 #define ID_USERS_DELETEUSER             32784
 #define ID_SENSORS_DELETEUSER           32785
+#define ID_BUTTON_REFRESH               32786
+#define ID_BUTTON_ALERTS                32787
+#define ID_BUTTON32788                  32788
+#define ID_BUTTON_USERS                 32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        332
-#define _APS_NEXT_COMMAND_VALUE         32786
+#define _APS_NEXT_RESOURCE_VALUE        334
+#define _APS_NEXT_COMMAND_VALUE         32789
 #define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           311
 #endif

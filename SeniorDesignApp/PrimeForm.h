@@ -1,4 +1,5 @@
 #pragma once
+#include "afxcmn.h"
 
 
 
@@ -27,6 +28,22 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnUsersViewusers();
+	afx_msg void OnAddUser();
+	afx_msg void OnUsersDeleteuser();
+	CListCtrl mViewSensors;
+	afx_msg void OnButtonRefresh();
+	void ResetListControl();
+	void FillSensorTable();
+	void FillAlertTable();
+	afx_msg void OnAddSensor();
+	afx_msg void OnSensorsDeleteuser();
+	afx_msg void OnSensorsConfiguresensor();
+	afx_msg void OnSensorsTestsensor();
+	CListCtrl m_ViewAlerts;
+	afx_msg void OnButtonAlerts();
+	afx_msg void OnButtonUsers();
 };
 
 

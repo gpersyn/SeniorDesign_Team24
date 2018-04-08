@@ -192,6 +192,7 @@
     <ClInclude Include="AddSensorDlg.h" />
     <ClInclude Include="AddUserDlg.h" />
     <ClInclude Include="ConfigSensorDlg.h" />
+    <ClInclude Include="DeleteSensorDlg.h" />
     <ClInclude Include="DeleteUserDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="PrimeForm.h" />
@@ -205,12 +206,14 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestSensorDlg.h" />
     <ClInclude Include="TestSQLDatabase.h" />
+    <ClInclude Include="ViewAlertsDlg.h" />
     <ClInclude Include="ViewUserDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddSensorDlg.cpp" />
     <ClCompile Include="AddUserDlg.cpp" />
     <ClCompile Include="ConfigSensorDlg.cpp" />
+    <ClCompile Include="DeleteSensorDlg.cpp" />
     <ClCompile Include="DeleteUserDlg.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="PrimeForm.cpp" />
@@ -229,6 +232,7 @@
     </ClCompile>
     <ClCompile Include="TestSensorDlg.cpp" />
     <ClCompile Include="TestSQLDatabase.cpp" />
+    <ClCompile Include="ViewAlertsDlg.cpp" />
     <ClCompile Include="ViewUserDlg.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -402,7 +402,7 @@ void CSeniorDesignAppView::DecodeSerialInput() {
 	Propane_Value = CString(Propane_Value_Temp, 3);
 
 	//Check if sensor is working (NOT ADDED YET)
-	Sensor_Status = "Yes"; //Temp
+	Sensor_Status = ""; //Temp
 }
 
 void CSeniorDesignAppView::OnSensorsConfiguresensor()
