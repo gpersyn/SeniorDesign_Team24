@@ -19,6 +19,7 @@
 #define IDD_DIALOG1                     329
 #define IDD_DIALOG_DELETE_SENSOR        329
 #define IDD_DIALOG_VIEW_ALERTS          332
+#define IDD_DIALOG_DEBUG_SMS_TEST       334
 #define IDC_EDIT2                       1012
 #define IDC_EDIT_BUILDING               1012
 #define IDC_CONFIG_METHANE_THRESHOLD    1013
@@ -59,6 +60,7 @@
 #define IDC_USER_NAME                   1045
 #define IDC_LIST_DATABASE               1046
 #define IDC_LIST_VIEW_USERS             1047
+#define IDC_EDIT_MESSAGE                1048
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -77,16 +79,16 @@
 #define ID_SENSORS_DELETEUSER           32785
 #define ID_BUTTON_REFRESH               32786
 #define ID_BUTTON_ALERTS                32787
-#define ID_BUTTON32788                  32788
 #define ID_BUTTON_USERS                 32788
+#define ID_DEBUG_SMSTEST                32789
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        334
-#define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_RESOURCE_VALUE        336
+#define _APS_NEXT_COMMAND_VALUE         32790
+#define _APS_NEXT_CONTROL_VALUE         1049
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

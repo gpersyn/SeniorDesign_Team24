@@ -162,6 +162,7 @@ BEGIN
         MENUITEM "Serial Debug",                ID_DEBUG_SERIALDEBUG
         MENUITEM "LED SWITCH",                  ID_DEBUG_LEDSWITCH
         MENUITEM "SQL Database",                ID_DEBUG_SQLDATABASE
+        MENUITEM "SMS TEST",                    ID_DEBUG_SMSTEST
     END
     POPUP "&Help"
     BEGIN
@@ -362,6 +363,16 @@ BEGIN
     PUSHBUTTON      "Refresh",IDC_BUTTON_REFRESH,7,339,50,14
 END
 
+IDD_DIALOG_DEBUG_SMS_TEST DIALOGEX 0, 0, 169, 50
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Send SMS"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Yes",IDOK,45,29,50,14
+    PUSHBUTTON      "No",IDCANCEL,98,29,50,14
+    LTEXT           "Do you want to send a test SMS message?",IDC_STATIC,7,7,141,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -505,6 +516,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 353
     END
+
+    IDD_DIALOG_DEBUG_SMS_TEST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 148
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -570,6 +589,11 @@ BEGIN
 END
 
 IDD_DIALOG_VIEW_ALERTS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_DEBUG_SMS_TEST AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

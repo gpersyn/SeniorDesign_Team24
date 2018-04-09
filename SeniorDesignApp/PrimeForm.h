@@ -44,6 +44,9 @@ public:
 	CListCtrl m_ViewAlerts;
 	afx_msg void OnButtonAlerts();
 	afx_msg void OnButtonUsers();
+	afx_msg void OnDebugSmstest();
+	int sendSMS(char const* message);
+	afx_msg void OnDebugLedswitch();
 };
 
 

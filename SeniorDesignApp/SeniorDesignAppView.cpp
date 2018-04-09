@@ -11,6 +11,7 @@
 
 #include "SeniorDesignAppDoc.h"
 #include "SeniorDesignAppView.h"
+//#include "SerialHeader.h"
 
 //Custom Dialogs
 #include "AddUserDlg.h"
@@ -22,11 +23,11 @@
 #include "DeleteUserDlg.h"
 #include "ViewUserDlg.h"
 //Serial Port
-#include<iostream>
+/*#include<iostream>
 using namespace std;
 #include<string>
 #include<stdlib.h>
-#include"SerialPort.h"
+#include"SerialPort.h"*/
 //For Database
 #include "odbcinst.h"
 #include "afxdb.h"
@@ -36,10 +37,10 @@ using namespace std;
 #endif
 
 //Serial Port Variables
-const int DataWidth = 12; //MAX_DATA_LENGTH
+/*const int DataWidth = 12; //MAX_DATA_LENGTH
 char output[DataWidth];
 char incomingData[DataWidth];
-char *port = "\\\\.\\COM4";
+char *port = "\\\\.\\COM4";*/
 
 // CSeniorDesignAppView
 
@@ -66,7 +67,7 @@ BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 END_MESSAGE_MAP()
 
 //Serial Port Code Here
-SerialPort arduino(port);
+//SerialPort arduino(port);
 
 
 // CSeniorDesignAppView construction/destruction
@@ -165,8 +166,8 @@ void CSeniorDesignAppView::OnDraw(CDC* pDC)
 	pDC->SetBkMode(TRANSPARENT);
 
 	//Serial Debug Test Code
-	CString TempDebugOutput = CString(incomingData, DataWidth);
-	pDC->TextOutW(400, 400, TempDebugOutput);
+	//CString TempDebugOutput = CString(incomingData, DataWidth);
+	//pDC->TextOutW(400, 400, TempDebugOutput);
 
 	//DrawText Test
 	pDC->SelectObject(def_font); //Sets Font back to old Font
@@ -326,20 +327,20 @@ void CSeniorDesignAppView::OnDebugSerialDebug()
 
 void CSeniorDesignAppView::OnDebugLedswitch()
 {
-	if (arduino.isConnected()) {
+	/*if (arduino.isConnected()) {
 		/*CString data = _T("ACK");
 		char *charArray = new char[data.GetLength() + 1];
 		copy(data.Mid(0,0), data.Mid(data.GetLength() - 1, data.GetLength() - 1), charArray);
 		charArray[data.GetLength()] = '\n';*/
 
-		charInputArray = "ACK";
+		/*charInputArray = "ACK";
 
 		arduino.writeSerialPort(charInputArray, DataWidth);
 		arduino.readSerialPort(incomingData, DataWidth);
 
 		Invalidate();
 		UpdateWindow();
-	}
+	}*/
 }
 
 
@@ -364,7 +365,7 @@ void CSeniorDesignAppView::OnButtonTablesizeDecrease()
 
 void CSeniorDesignAppView::DecodeSerialInput() {
 	//Initialize Temp C Array Variables
-	char Sensor_ID_Temp[3]{ 0,0,0 };
+	/*char Sensor_ID_Temp[3]{ 0,0,0 };
 	char CO_Value_Temp[3]{ 0, 0, 0 };
 	char Methane_Value_Temp[3]{ 0, 0, 0 };
 	char Propane_Value_Temp[3]{ 0, 0, 0 };
@@ -402,12 +403,12 @@ void CSeniorDesignAppView::DecodeSerialInput() {
 	Propane_Value = CString(Propane_Value_Temp, 3);
 
 	//Check if sensor is working (NOT ADDED YET)
-	Sensor_Status = ""; //Temp
+	Sensor_Status = ""; //Temp*/
 }
 
 void CSeniorDesignAppView::OnSensorsConfiguresensor()
 {
-	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
+	/*ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
 	ConfigureSensorDialog.DoModal();
 
 	//Use Return Values
@@ -418,7 +419,7 @@ void CSeniorDesignAppView::OnSensorsConfiguresensor()
 	char *OutputSerial;
 	OutputSerial = test1.GetBuffer(test1.GetLength()); //convert to char array
 
-	arduino.writeSerialPort(OutputSerial, DataWidth);
+	arduino.writeSerialPort(OutputSerial, DataWidth);*/
 }
 
 

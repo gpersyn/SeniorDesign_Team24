@@ -16,23 +16,20 @@
 #include "ViewUserDlg.h"
 #include "DeleteSensorDlg.h"
 #include "ViewAlertsDlg.h"
+#include "TestSMSDlg.h"
 
-//Serial Port
-#include<iostream>
-using namespace std;
-#include<string>
-#include<stdlib.h>
-#include"SerialPort.h"
+//For Serial Stuff
+#include "SerialHeader.h" 
+SerialPort arduino(port);
+
 //For Database
 #include "odbcinst.h"
 #include "afxdb.h"
 
-//Serial Port Variables
-/*const int DataWidth = 12; //MAX_DATA_LENGTH
-char output[DataWidth];
-char incomingData[DataWidth];
-char *port = "\\\\.\\COM4";
-SerialPort arduino(port);*/
+//SMS
+#include <stdio.h>
+#include <curl/curl.h>
+#define MAX_TWILIO_MESSAGE_SIZE 10000
 
 // CPrimeForm
 
@@ -66,6 +63,8 @@ BEGIN_MESSAGE_MAP(CPrimeForm, CFormView)
 	ON_COMMAND(ID_SENSORS_TESTSENSOR, &CPrimeForm::OnSensorsTestsensor)
 	ON_COMMAND(ID_BUTTON_ALERTS, &CPrimeForm::OnButtonAlerts)
 	ON_COMMAND(ID_BUTTON_USERS, &CPrimeForm::OnButtonUsers)
+	ON_COMMAND(ID_DEBUG_SMSTEST, &CPrimeForm::OnDebugSmstest)
+	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CPrimeForm::OnDebugLedswitch)
 END_MESSAGE_MAP()
 
 
@@ -280,18 +279,19 @@ void CPrimeForm::OnSensorsDeleteuser() //This is acctually to delete Sensor not 
 
 void CPrimeForm::OnSensorsConfiguresensor()
 {
-	/*ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
-	ConfigureSensorDialog.DoModal();
+	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
+	if (ConfigureSensorDialog.DoModal() == true) {
 
-	//Use Return Values
-	CString test3 = ConfigureSensorDialog.m_Config_SensorID;
-	int test2 = ConfigureSensorDialog.Methane_Threshold_Value;
+		/*//Use Return Values
+		CString test3 = ConfigureSensorDialog.m_Config_SensorID;
+		int test2 = ConfigureSensorDialog.Methane_Threshold_Value;
 
-	CStringA test1 = "Hi";
-	char *OutputSerial;
-	OutputSerial = test1.GetBuffer(test1.GetLength()); //convert to char array
+		CStringA test1 = "Hi";
+		char *OutputSerial;
+		OutputSerial = test1.GetBuffer(test1.GetLength()); //convert to char array
 
-	arduino.writeSerialPort(OutputSerial, DataWidth);*/
+		arduino.writeSerialPort(OutputSerial, DataWidth);*/
+	}
 }
 
 
@@ -315,6 +315,31 @@ void CPrimeForm::OnButtonUsers()
 	ViewUser.DoModal();
 }
 
+
+//Debug Dialog-------------------------------------------------------------------------------------------------
+void CPrimeForm::OnDebugSmstest()
+{
+	TestSMSDlg TestSMS;
+	if (TestSMS.DoModal() == true){ //Send SMS
+		char const* message = "This is a SMS test!";
+		int r = sendSMS(message);
+	}
+}
+
+void CPrimeForm::OnDebugLedswitch()
+{
+	if (arduino.isConnected()) {
+		/*CString data = _T("ACK");
+		char *charArray = new char[data.GetLength() + 1];
+		copy(data.Mid(0,0), data.Mid(data.GetLength() - 1, data.GetLength() - 1), charArray);
+		charArray[data.GetLength()] = '\n';*/
+
+		char *InputArray = "ACK";
+
+		arduino.writeSerialPort(InputArray, DataWidth);
+		arduino.readSerialPort(incomingData, DataWidth);
+	}
+}
 
 //MainView Stuff-----------------------------------------------------------------------------------------------
 void CPrimeForm::OnButtonRefresh()
@@ -419,6 +444,101 @@ void CPrimeForm::FillSensorTable() {
 }
 
 
+//SMS Functions-------------------------------------------------------------------------------
+size_t _twilio_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	return size * nmemb;
+}
 
+int CPrimeForm::sendSMS(char const* message) {
+	char const* account_sid = "AC2224c0258a7de9a1f4084e9d0ab90646";
+	char const* auth_token = "65abbaaec703b46920f5b58c45650ca8";
+	//char const* message = "Test4";
+	char const* from_number = "8302667136";
+	char const* to_number = "2109121818";
+	//char const* picture_url = "";
+	bool verbose = true;
+
+
+	// See: https://www.twilio.com/docs/api/rest/sending-messages for
+	// information on Twilio body size limits.
+	if (strlen(message) > 1600) {
+		fprintf(stderr, "SMS send failed.\n"
+			"Message body must be less than 1601 characters.\n"
+			"The message had %zu characters.\n", strlen(message));
+		return -1;
+	}
+
+	CURL *curl;
+	//CURLcode res;
+	CURLcode res = curl_global_init(CURL_GLOBAL_ALL);
+	curl = curl_easy_init();
+
+	char url[MAX_TWILIO_MESSAGE_SIZE];
+	snprintf(url,
+		sizeof(url),
+		"%s%s%s",
+		"https://api.twilio.com/2010-04-01/Accounts/",
+		account_sid,
+		"/Messages");
+
+	char parameters[MAX_TWILIO_MESSAGE_SIZE];
+
+	snprintf(parameters,
+		sizeof(parameters),
+		"%s%s%s%s%s%s",
+		"To=",
+		to_number,
+		"&From=",
+		from_number,
+		"&Body=",
+		message);
+
+
+	curl_easy_setopt(curl, CURLOPT_POST, 1);
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, parameters);
+	curl_easy_setopt(curl, CURLOPT_USERNAME, account_sid);
+	curl_easy_setopt(curl, CURLOPT_PASSWORD, auth_token);
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
+
+	if (!verbose) {
+		curl_easy_setopt(curl,
+			CURLOPT_WRITEFUNCTION,
+			_twilio_null_write);
+	}
+
+	res = curl_easy_perform(curl);
+
+
+	long http_code = 0;
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+
+	if (res != CURLE_OK) {
+		if (verbose) {
+			fprintf(stderr,
+				"SMS send failed: %s.\n",
+				curl_easy_strerror(res));
+		}
+		return -1;
+	}
+	else if (http_code != 200 && http_code != 201) {
+		if (verbose) {
+			fprintf(stderr,
+				"SMS send failed, HTTP Status Code: %ld.\n",
+				http_code);
+		}
+		return -1;
+	}
+	else {
+		if (verbose) {
+			fprintf(stderr,
+				"SMS sent successfully!\n");
+		}
+		return 0;
+	}
+
+	curl_easy_cleanup(curl);
+}
 
 
