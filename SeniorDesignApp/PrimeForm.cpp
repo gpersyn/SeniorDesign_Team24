@@ -451,13 +451,7 @@ size_t _twilio_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 int CPrimeForm::sendSMS(char const* message) {
-	char const* account_sid = "AC2224c0258a7de9a1f4084e9d0ab90646";
-	char const* auth_token = "65abbaaec703b46920f5b58c45650ca8";
-	//char const* message = "Test4";
-	char const* from_number = "8302667136";
-	char const* to_number = "2109121818";
-	//char const* picture_url = "";
-	bool verbose = true;
+	
 
 
 	// See: https://www.twilio.com/docs/api/rest/sending-messages for
