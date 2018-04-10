@@ -21,7 +21,8 @@ CAddUserDlg::CAddUserDlg(CWnd* pParent /*=NULL*/)
 	, m_PhoneNumber(0)
 	, m_Email(_T(""))
 	, m_UserID(0)
-	, m_ADMIN_ON(false)
+	, m_UserPassword(_T(""))
+	, m_ADMIN_ON(true)
 {
 
 }
@@ -40,6 +41,7 @@ void CAddUserDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EMAIL, m_Email);
 	DDX_Text(pDX, IDC_USER_ID, m_UserID);
 	DDX_Control(pDX, IDC_LIST_DATABASE, m_Database_View);
+	DDX_Text(pDX, IDC_EDIT_USER_PASSWORD, m_UserPassword);
 }
 
 

@@ -31,5 +31,6 @@ public:
 	CListCtrl m_Database_View;
 	afx_msg void OnBnClickedRefreshTable();
 	void ResetListControl();
+	CString m_UserPassword;
 	bool m_ADMIN_ON;
 };

@@ -110,7 +110,8 @@ void CPrimeForm::OnAddUser()
 		CString temp_FirstName = dlgAddUser.m_FirstName;
 		CString temp_LastName = dlgAddUser.m_LastName;
 		long temp_PhoneNumber = dlgAddUser.m_PhoneNumber;
-		CString temp_Email_Addresss = dlgAddUser.m_Email;
+		CString temp_Email_Address = dlgAddUser.m_Email;
+		CString temp_User_Password = dlgAddUser.m_UserPassword;
 
 		//Add User to database
 		CDatabase database;
@@ -134,7 +135,7 @@ void CPrimeForm::OnAddUser()
 		//if (database.Open(NULL,false,false,sDsn))
 		//AfxMessageBox("database opened!");
 		//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
-		SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (%d,'%s','%s','%s','%s',%u,'%s')", temp_UserID, temp_UserName, temp_UserType, temp_FirstName, temp_LastName, temp_PhoneNumber, temp_Email_Addresss);
+		SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress,Passwords) VALUES (%d,'%s','%s','%s','%s',%u,'%s','%s')", temp_UserID, temp_UserName, temp_UserType, temp_FirstName, temp_LastName, temp_PhoneNumber, temp_Email_Address, temp_User_Password);
 		//SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
 		//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
 		database.ExecuteSQL(SqlString);
@@ -451,7 +452,7 @@ size_t _twilio_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 int CPrimeForm::sendSMS(char const* message) {
-	
+
 
 
 	// See: https://www.twilio.com/docs/api/rest/sending-messages for

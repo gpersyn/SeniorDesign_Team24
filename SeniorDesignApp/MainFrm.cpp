@@ -1,4 +1,4 @@
-
+﻿
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 
@@ -6,6 +6,13 @@
 #include "SeniorDesignApp.h"
 
 #include "MainFrm.h"
+
+//Dialogs
+#include "UserLoginDlg.h"
+//Database
+//For Database
+#include "odbcinst.h"
+#include "afxdb.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,7 +38,71 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 {
-	// TODO: add member initialization code here
+	//User Login
+	UserLoginDlg UserLogin;
+	if (UserLogin.DoModal() == true) { //Check Username and Password
+		//User Input
+		CString UserName, UserPassword;
+		UserName = UserLogin.m_UserName;
+		UserPassword = UserLogin.m_Password;
+
+		//Get info from database
+		CDatabase database;
+		CString SqlString;
+		CString tempUserType, tempPassword;
+		CString sDriver = L"SQL Server";
+		CString sDsn;
+		CString sMc = L"GARRETT-DESKTOP";
+		CString sFile = L"AppTest1";
+		int iRec = 0;
+
+		// Build ODBC connection string
+		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
+		TRY{
+			// Open the database
+			database.Open(NULL,false,false,sDsn);
+
+		// Allocate the recordset
+		CRecordset recset(&database);
+
+		//Sensor Table
+
+		// Build the SQL statement
+		SqlString.Format(L"SELECT Usertype, Passwords FROM Users Where UserName = '%s'", UserName);
+
+		// Execute the query
+		recset.Open(CRecordset::forwardOnly,SqlString,CRecordset::readOnly);
+
+		// Loop through each record
+		while (!recset.IsEOF()) {
+			// Copy each column into a variable
+			recset.GetFieldValue(L"Usertype", tempUserType);
+			recset.GetFieldValue(L"Passwords", tempPassword);
+		
+
+			// goto next record
+			recset.MoveNext();
+		}
+
+		// Close the database
+		database.Close();
+		}CATCH(CDBException, e) {
+			// If a database exception occured, show error msg
+			//AfxMessageBox("Database error: " + e→m_strError);
+		}
+		END_CATCH;
+
+		//Check if user input and database match
+		bool temp1 = tempPassword != UserPassword;
+		bool temp2 = tempUserType != L"ADMIN";
+		if (temp1 | temp2) {
+			exit(0);
+		}
+		
+	}
+	else {
+		exit(0);
+	}
 }
 
 CMainFrame::~CMainFrame()
