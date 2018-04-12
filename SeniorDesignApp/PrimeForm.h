@@ -47,6 +47,7 @@ public:
 	afx_msg void OnDebugSmstest();
 	int sendSMS(char const* message);
 	afx_msg void OnDebugLedswitch();
+	afx_msg void OnSensorsUpdatesensors();
 };
 
 

@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CPrimeForm, CFormView)
 	ON_COMMAND(ID_BUTTON_USERS, &CPrimeForm::OnButtonUsers)
 	ON_COMMAND(ID_DEBUG_SMSTEST, &CPrimeForm::OnDebugSmstest)
 	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CPrimeForm::OnDebugLedswitch)
+	ON_COMMAND(ID_SENSORS_UPDATESENSORS, &CPrimeForm::OnSensorsUpdatesensors)
 END_MESSAGE_MAP()
 
 
@@ -215,20 +216,14 @@ void CPrimeForm::OnAddSensor()
 		// You must change above path if it's different
 		int iRec = 0;
 
-		// Build ODBC connection string
-		//sDsn.Format(L"ODBC;DRIVER={%s};DSN='';DBQ=%s", sDriver, sFile);
-		//sDsn = L"Data Source=GARRETT-DESKTOP;Initial Catalog=AppTest1;Integrated Security=True";
 		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
 
 		TRY{
 			// Open the database
 			database.Open(NULL,false,false,sDsn);
-		//if (database.Open(NULL,false,false,sDsn))
-		//AfxMessageBox("database opened!");
-		//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
+
 		SqlString.Format(L"INSERT INTO Sensors (ID ,Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber) VALUES (%d,'WORKING','0','0','0','%s',%d)", SensorID, BuildingName, RoomNumber);
-		//SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
-		//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
+
 		database.ExecuteSQL(SqlString);
 		// Close the database
 		database.Close();
@@ -282,16 +277,19 @@ void CPrimeForm::OnSensorsConfiguresensor()
 {
 	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
 	if (ConfigureSensorDialog.DoModal() == true) {
-
-		/*//Use Return Values
-		CString test3 = ConfigureSensorDialog.m_Config_SensorID;
-		int test2 = ConfigureSensorDialog.Methane_Threshold_Value;
-
-		CStringA test1 = "Hi";
-		char *OutputSerial;
-		OutputSerial = test1.GetBuffer(test1.GetLength()); //convert to char array
-
-		arduino.writeSerialPort(OutputSerial, DataWidth);*/
+		std:string tempInput = "01"; //This is the control bits
+		//CONTOL BITS: '00' = read, '01' = config, '10' = test
+		int tempID = ConfigureSensorDialog.m_SensorID;
+		std::string temp = std::to_string(tempID);
+		if (tempID < 10) { //add extra zeros to id if id is only a single digit
+			tempInput += "00";
+		}
+		else if (tempID < 99) { //if id has double digits
+			tempInput += "0";
+		}
+		tempInput += temp; //add sensor id to control bits
+		const char *InputArray = tempInput.c_str(); 
+		arduino.writeSerialPort(InputArray, DataWidth);
 	}
 }
 
@@ -299,8 +297,44 @@ void CPrimeForm::OnSensorsConfiguresensor()
 void CPrimeForm::OnSensorsTestsensor()
 {
 	TestSensorDlg TestSensorDialog; //Call Test Sensor Dialog Box
-	TestSensorDialog.DoModal();
+	if (TestSensorDialog.DoModal() == true) {
+		std:string tempInput = "10"; //This is the control bits
+		//CONTOL BITS: '00' = read, '01' = config, '10' = test
+		int tempID = TestSensorDialog.m_SensorID;
+		std::string temp = std::to_string(tempID);
+		if (tempID < 10) { //add extra zeros to id if id is only a single digit
+			tempInput += "00";
+		}
+		else if (tempID < 99) { //if id has double digits
+			tempInput += "0";
+		}
+		tempInput += temp; //add sensor id to control bits
+		const char *InputArray = tempInput.c_str();
+		arduino.writeSerialPort(InputArray, DataWidth);
+	}
 }
+
+void CPrimeForm::OnSensorsUpdatesensors()
+{
+	char ControlBits[2]{ 1, 1};
+	char SensorID[3]{ 0, 0, 0 };
+	char inData[DataWidth];
+	arduino.readSerialPort(inData, MAX_DATA_LENGTH);
+	//find start of message
+	for (int i = 0; i < (DataWidth-7); i++) {
+		if (inData[i] == 'S') {
+			for (int j = 0; j < 2; j++) {
+				ControlBits[j] = inData[i + 1 + j];
+			}
+			for (int j = 0; j < 3; j++) {
+				SensorID[j] = inData[i + 3 + j];
+			}
+			break;
+		}
+
+	}
+}
+
 
 //ToolBar Dialog-------------------------------------------------------------------------------------------------
 
@@ -335,10 +369,10 @@ void CPrimeForm::OnDebugLedswitch()
 		copy(data.Mid(0,0), data.Mid(data.GetLength() - 1, data.GetLength() - 1), charArray);
 		charArray[data.GetLength()] = '\n';*/
 
-		char *InputArray = "ACK";
+		const char *InputArray = "ACK";
 
 		arduino.writeSerialPort(InputArray, DataWidth);
-		arduino.readSerialPort(incomingData, DataWidth);
+		//arduino.readSerialPort(incomingData, DataWidth);
 	}
 }
 
@@ -452,8 +486,13 @@ size_t _twilio_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 int CPrimeForm::sendSMS(char const* message) {
-
-
+	char const* account_sid = "AC2224c0258a7de9a1f4084e9d0ab90646";
+	char const* auth_token = "65abbaaec703b46920f5b58c45650ca8";
+	//char const* message = "Test4";
+	char const* from_number = "8302667136";
+	char const* to_number = "2109121818";
+	//char const* picture_url = "";
+	bool verbose = true;
 
 	// See: https://www.twilio.com/docs/api/rest/sending-messages for
 	// information on Twilio body size limits.
@@ -535,5 +574,7 @@ int CPrimeForm::sendSMS(char const* message) {
 
 	curl_easy_cleanup(curl);
 }
+
+
 
 

@@ -64,7 +64,7 @@
 #define IDC_LIST_VIEW_USERS             1047
 #define IDC_EDIT_USERNAME               1049
 #define IDC_EDIT_USER_PASSWORD          1050
-#define IDC_RADIO3                      1051
+#define IDC_EDIT_TEST_ID                1052
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -85,14 +85,16 @@
 #define ID_BUTTON_ALERTS                32787
 #define ID_BUTTON_USERS                 32788
 #define ID_DEBUG_SMSTEST                32789
+#define ID_DEBUG_UPDATESENSORS          32790
+#define ID_SENSORS_UPDATESENSORS        32791
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
-#define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1052
+#define _APS_NEXT_COMMAND_VALUE         32792
+#define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
