@@ -20,8 +20,10 @@
 #define IDD_DIALOG_DELETE_SENSOR        329
 #define IDD_DIALOG_VIEW_ALERTS          332
 #define IDD_DIALOG_DEBUG_SMS_TEST       334
+#define IDD_DIALOG_LOG_IN               336
 #define IDC_EDIT2                       1012
 #define IDC_EDIT_BUILDING               1012
+#define IDC_EDIT_PASSWORD               1012
 #define IDC_CONFIG_METHANE_THRESHOLD    1013
 #define IDC_CONFIG_PROPANE_THRESHOLD    1014
 #define IDC_LIST1                       1015
@@ -35,6 +37,7 @@
 #define IDC_EDIT3                       1020
 #define IDC_EDIT_ROOM                   1020
 #define IDC_EDIT4                       1021
+#define IDC_EDIT_METH_THRESH            1021
 #define IDC_EDIT1                       1023
 #define IDC_COMBO1                      1024
 #define IDC_TEXTBOX_SERIAL_WRITE        1024
@@ -49,6 +52,7 @@
 #define IDC_RADIO_CONFIG_SENSOR_STATE_ON 1035
 #define IDC_RADIO_CONFIG_SENSOR_STATE_OFF 1036
 #define IDC_EDIT5                       1037
+#define IDC_EDIT_CO_THRESH              1037
 #define IDC_BUTTON1                     1038
 #define IDC_BUTTON_WRITE_DATABASE_TEST  1038
 #define IDC_ADD_USER                    1038
@@ -60,7 +64,10 @@
 #define IDC_USER_NAME                   1045
 #define IDC_LIST_DATABASE               1046
 #define IDC_LIST_VIEW_USERS             1047
-#define IDC_EDIT_MESSAGE                1048
+#define IDC_EDIT_USERNAME               1049
+#define IDC_EDIT_USER_PASSWORD          1050
+#define IDC_EDIT_TEST_ID                1052
+#define IDC_EDIT_PRO_THRESH             1053
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -81,14 +88,17 @@
 #define ID_BUTTON_ALERTS                32787
 #define ID_BUTTON_USERS                 32788
 #define ID_DEBUG_SMSTEST                32789
+#define ID_DEBUG_UPDATESENSORS          32790
+#define ID_SENSORS_UPDATESENSORS        32791
+#define ID_ALERTS_VIEWALERTS            32792
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        336
-#define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1049
+#define _APS_NEXT_RESOURCE_VALUE        338
+#define _APS_NEXT_COMMAND_VALUE         32793
+#define _APS_NEXT_CONTROL_VALUE         1054
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif
