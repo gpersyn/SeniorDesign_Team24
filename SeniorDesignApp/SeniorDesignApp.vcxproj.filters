@@ -84,6 +84,9 @@
     <ClInclude Include="UserLoginDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DatabaseInitialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SeniorDesignApp.cpp">

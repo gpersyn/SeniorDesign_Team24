@@ -87,13 +87,14 @@
 #define ID_DEBUG_SMSTEST                32789
 #define ID_DEBUG_UPDATESENSORS          32790
 #define ID_SENSORS_UPDATESENSORS        32791
+#define ID_ALERTS_VIEWALERTS            32792
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
-#define _APS_NEXT_COMMAND_VALUE         32792
+#define _APS_NEXT_COMMAND_VALUE         32793
 #define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           311
 #endif

@@ -28,9 +28,6 @@ public:
 	long m_PhoneNumber;
 	CString m_Email;
 	int m_UserID;
-	CListCtrl m_Database_View;
-	afx_msg void OnBnClickedRefreshTable();
-	void ResetListControl();
 	CString m_UserPassword;
 	bool m_ADMIN_ON;
 };

@@ -2,7 +2,6 @@
 #include "afxcmn.h"
 
 
-
 // CPrimeForm form view
 
 class CPrimeForm : public CFormView
@@ -48,6 +47,7 @@ public:
 	int sendSMS(char const* message);
 	afx_msg void OnDebugLedswitch();
 	afx_msg void OnSensorsUpdatesensors();
+	afx_msg void OnAlertsViewalerts();
 };
 
 

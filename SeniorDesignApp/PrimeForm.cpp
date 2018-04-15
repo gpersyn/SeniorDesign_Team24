@@ -22,27 +22,44 @@
 #include "SerialHeader.h" 
 SerialPort arduino(port);
 
-//For Database
-#include "odbcinst.h"
-#include "afxdb.h"
+//Database
+#include "DatabaseInitialization.h"
+CDatabase database;
+CString sDriver;
+CString sDsn;
+CString sMc;
+CString sFile;
+// You must change above path if it's different
+int iRec;
 
 //SMS
 #include <stdio.h>
 #include <curl/curl.h>
 #define MAX_TWILIO_MESSAGE_SIZE 10000
 
+
 // CPrimeForm
 
 IMPLEMENT_DYNCREATE(CPrimeForm, CFormView)
 
+//Constructor
 CPrimeForm::CPrimeForm()
 	: CFormView(IDD_PRIMEFORM)
 {
+	sDriver = L"SQL Server";
+	sMc = L"GARRETT-DESKTOP";
+	sFile = L"AppTest1";
+	iRec = 0;
+	// Build ODBC connection string
+	sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
+	// Open the database
+	database.Open(NULL, false, false, sDsn);
 
 }
 
 CPrimeForm::~CPrimeForm()
 {
+	database.Close();
 }
 
 void CPrimeForm::DoDataExchange(CDataExchange* pDX)
@@ -50,6 +67,23 @@ void CPrimeForm::DoDataExchange(CDataExchange* pDX)
 	CFormView::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST_VIEW_SENSORS, mViewSensors);
 	//DDX_Control(pDX, IDC_LIST_VIEW_ALERTS, m_ViewAlerts);
+
+	// Column width and heading
+	mViewSensors.InsertColumn(0, L"ID", LVCFMT_LEFT, -1, 0);
+	mViewSensors.InsertColumn(1, L"Status", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(2, L"Propane Value", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(3, L"Methane Value", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(4, L"CO Value", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(5, L"Building Name", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(6, L"Room Number", LVCFMT_LEFT, -1, 1);
+	mViewSensors.SetColumnWidth(0, 50);
+	mViewSensors.SetColumnWidth(1, 100);
+	mViewSensors.SetColumnWidth(2, 100);
+	mViewSensors.SetColumnWidth(3, 100);
+	mViewSensors.SetColumnWidth(4, 100);
+	mViewSensors.SetColumnWidth(5, 100);
+	mViewSensors.SetColumnWidth(6, 100);
+	FillSensorTable();
 }
 
 BEGIN_MESSAGE_MAP(CPrimeForm, CFormView)
@@ -66,6 +100,7 @@ BEGIN_MESSAGE_MAP(CPrimeForm, CFormView)
 	ON_COMMAND(ID_DEBUG_SMSTEST, &CPrimeForm::OnDebugSmstest)
 	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CPrimeForm::OnDebugLedswitch)
 	ON_COMMAND(ID_SENSORS_UPDATESENSORS, &CPrimeForm::OnSensorsUpdatesensors)
+	ON_COMMAND(ID_ALERTS_VIEWALERTS, &CPrimeForm::OnAlertsViewalerts)
 END_MESSAGE_MAP()
 
 
@@ -91,8 +126,14 @@ void CPrimeForm::Dump(CDumpContext& dc) const
 //USER DIALOGS---------------------------------------------------------------------------------------------------------------
 void CPrimeForm::OnUsersViewusers()
 {
-	ViewUserDlg ViewUser;
-	ViewUser.DoModal();
+	//Model
+	//ViewUserDlg ViewUser;
+	//ViewUser.DoModal();
+
+	//Modeless
+	ViewUserDlg *dlgViewUser = new ViewUserDlg(this);
+	dlgViewUser->Create(IDD_DIALOG_VIEW_USERS, GetDesktopWindow());
+	dlgViewUser->ShowWindow(SW_SHOW);
 }
 
 void CPrimeForm::OnAddUser()
@@ -113,40 +154,13 @@ void CPrimeForm::OnAddUser()
 		long temp_PhoneNumber = dlgAddUser.m_PhoneNumber;
 		CString temp_Email_Address = dlgAddUser.m_Email;
 		CString temp_User_Password = dlgAddUser.m_UserPassword;
-
-		//Add User to database
-		CDatabase database;
 		CString SqlString;
 		CString strID, strName, strAge;
-		CString sDriver = L"SQL Server";
-		CString sDsn;
-		CString sMc = L"GARRETT-DESKTOP";
-		CString sFile = L"AppTest1";
-		// You must change above path if it's different
-		int iRec = 0;
 
-		// Build ODBC connection string
-		//sDsn.Format(L"ODBC;DRIVER={%s};DSN='';DBQ=%s", sDriver, sFile);
-		//sDsn = L"Data Source=GARRETT-DESKTOP;Initial Catalog=AppTest1;Integrated Security=True";
+		//Database Code
 		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
-
-		TRY{
-			// Open the database
-			database.Open(NULL,false,false,sDsn);
-		//if (database.Open(NULL,false,false,sDsn))
-		//AfxMessageBox("database opened!");
-		//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
 		SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress,Passwords) VALUES (%d,'%s','%s','%s','%s',%u,'%s','%s')", temp_UserID, temp_UserName, temp_UserType, temp_FirstName, temp_LastName, temp_PhoneNumber, temp_Email_Address, temp_User_Password);
-		//SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
-		//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
 		database.ExecuteSQL(SqlString);
-		// Close the database
-		database.Close();
-		}CATCH(CDBException, e) {
-			// If a database exception occured, show error msg
-			//AfxMessageBox(L"Database error: " + e→m_strError);
-		}
-		END_CATCH;
 	}
 }
 
@@ -156,40 +170,13 @@ void CPrimeForm::OnUsersDeleteuser()
 	DeleteUserDlg DeleteUser;
 	if (DeleteUser.DoModal() == true) {
 		int Temp_UserID = DeleteUser.m_UserID;
-
-		//Delete User from database
-		CDatabase database;
 		CString SqlString;
 		CString strID, strName, strAge;
-		CString sDriver = L"SQL Server";
-		CString sDsn;
-		CString sMc = L"GARRETT-DESKTOP";
-		CString sFile = L"AppTest1";
-		// You must change above path if it's different
-		int iRec = 0;
 
-		// Build ODBC connection string
-		//sDsn.Format(L"ODBC;DRIVER={%s};DSN='';DBQ=%s", sDriver, sFile);
-		//sDsn = L"Data Source=GARRETT-DESKTOP;Initial Catalog=AppTest1;Integrated Security=True";
+		//Database stuff
 		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
-
-		TRY{
-			// Open the database
-			database.Open(NULL,false,false,sDsn);
-		//if (database.Open(NULL,false,false,sDsn))
-		//AfxMessageBox("database opened!");
-		//SqlString = "INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (1,'Cowboysfan82','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')";
-		//SqlString.Format(L"INSERT INTO Users (ID,UserName,UserType,FirstName,LastName,PhoneNumber,EmailAddress) VALUES (%d,'%s','ADMIN','John','Packer',210456789,'Cowboysfan82@yahoo.com')", m_UserID,L"Johny");
 		SqlString.Format(L"DELETE Users where ID=%d",Temp_UserID);
-		//SqlString = "TOP (1000) [ID], [Name], [Age] FROM [AppTest1].[dbo].[Employees]";
 		database.ExecuteSQL(SqlString);
-		// Close the database
-		database.Close();
-		}CATCH(CDBException, e) {
-			// If a database exception occured, show error msg
-			//AfxMessageBox(L"Database error: " + e→m_strError);
-		}
-		END_CATCH;
 	}
 }
 
@@ -204,34 +191,12 @@ void CPrimeForm::OnAddSensor()
 		SensorID = dlgAddSensor.m_Sensor_ID;
 		BuildingName = dlgAddSensor.m_Building_Name;
 		RoomNumber = dlgAddSensor.m_Room_Number;
-
-		//Add Sensor to database
-		CDatabase database;
 		CString SqlString;
 		CString strID, strName, strAge;
-		CString sDriver = L"SQL Server";
-		CString sDsn;
-		CString sMc = L"GARRETT-DESKTOP";
-		CString sFile = L"AppTest1";
-		// You must change above path if it's different
-		int iRec = 0;
-
-		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
-
-		TRY{
-			// Open the database
-			database.Open(NULL,false,false,sDsn);
-
 		SqlString.Format(L"INSERT INTO Sensors (ID ,Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber) VALUES (%d,'WORKING','0','0','0','%s',%d)", SensorID, BuildingName, RoomNumber);
 
-		database.ExecuteSQL(SqlString);
-		// Close the database
-		database.Close();
-		}CATCH(CDBException, e) {
-			// If a database exception occured, show error msg
-			//AfxMessageBox(L"Database error: " + e→m_strError);
-		}
-		END_CATCH;
+		database.ExecuteSQL(SqlString); //send query
+		FillSensorTable(); //Refresh sensor table in primeview
 	}
 }
 
@@ -243,31 +208,11 @@ void CPrimeForm::OnSensorsDeleteuser() //This is acctually to delete Sensor not 
 		int Temp_SensorID = DeleteSensor.m_SensorID;
 
 		//Delete User from database
-		CDatabase database;
 		CString SqlString;
 		CString strID, strName, strAge;
-		CString sDriver = L"SQL Server";
-		CString sDsn;
-		CString sMc = L"GARRETT-DESKTOP";
-		CString sFile = L"AppTest1";
-		// You must change above path if it's different
-		int iRec = 0;
 
-		// Build ODBC connection string
-		sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
-
-		TRY{
-			// Open the database
-			database.Open(NULL,false,false,sDsn);
-			SqlString.Format(L"DELETE Sensors where ID=%d", Temp_SensorID);
-			database.ExecuteSQL(SqlString);
-			// Close the database
-			database.Close();
-		}CATCH(CDBException, e) {
-			// If a database exception occured, show error msg
-			//AfxMessageBox(L"Database error: " + e→m_strError);
-		}
-		END_CATCH;
+		SqlString.Format(L"DELETE Sensors where ID=%d", Temp_SensorID);
+		database.ExecuteSQL(SqlString);
 		OnButtonRefresh();
 	}
 }
@@ -340,14 +285,27 @@ void CPrimeForm::OnSensorsUpdatesensors()
 
 void CPrimeForm::OnButtonAlerts() //When alert button (on toolbar) is pressed
 {
-	ViewAlertsDlg AlertsDialog;
-	AlertsDialog.DoModal();
+	OnAlertsViewalerts();
 }
 
 void CPrimeForm::OnButtonUsers()
 {
-	ViewUserDlg ViewUser;
-	ViewUser.DoModal();
+	OnUsersViewusers();
+}
+
+
+//Alerts-------------------------------------------------------------------------------------------------------
+
+void CPrimeForm::OnAlertsViewalerts()
+{
+	//Model
+	//ViewAlertsDlg AlertsDialog;
+	//AlertsDialog.DoModal();
+
+	//Modeless
+	ViewAlertsDlg *AlertsDialog = new ViewAlertsDlg(this);
+	AlertsDialog->Create(IDD_DIALOG_VIEW_ALERTS, GetDesktopWindow());
+	AlertsDialog->ShowWindow(SW_SHOW);
 }
 
 
@@ -391,28 +349,15 @@ void CPrimeForm::ResetListControl() {
 		//iNbrOfColumns = pHeader→GetItemCount();
 		iNbrOfColumns = mViewSensors.GetItemCount();
 	}
-	for (int i = iNbrOfColumns; i >= 0; i--) {
+	for (int i = iNbrOfColumns-1; i >= 0; i--) { //the -1 prevents it from deleteing an extra column
 		mViewSensors.DeleteColumn(i);
 	}
 }
 
 void CPrimeForm::FillSensorTable() {
-	CDatabase database;
 	CString SqlString;
 	CString strID, strStatus, strPropaneValue, strMethaneValue, strCOValue, strBuildingName, strRoomNumber;
-	CString sDriver = L"SQL Server";
-	CString sDsn;
-	CString sMc = L"GARRETT-DESKTOP";
-	CString sFile = L"AppTest1";
-	// You must change above path if it's different
-	int iRec = 0;
-
-	// Build ODBC connection string
-	sDsn.Format(L"ODBC;Driver={%s};Server=%s;Database=%s;Trusted_Connection=yes", sDriver, sMc, sFile);
-	TRY{
-		// Open the database
-		database.Open(NULL,false,false,sDsn);
-
+	
 	// Allocate the recordset
 	CRecordset recset(&database);
 
@@ -427,23 +372,6 @@ void CPrimeForm::FillSensorTable() {
 	ResetListControl();
 	// populate Grids
 	ListView_SetExtendedListViewStyle(mViewSensors,LVS_EX_GRIDLINES);
-
-	//m_ListControl.InsertColumn(0, L"Name", LVCFMT_LEFT, 100);
-	// Column width and heading
-	mViewSensors.InsertColumn(0,L"ID",LVCFMT_LEFT,-1,0);
-	mViewSensors.InsertColumn(1,L"Status",LVCFMT_LEFT,-1,1);
-	mViewSensors.InsertColumn(2, L"Propane Value", LVCFMT_LEFT, -1, 1);
-	mViewSensors.InsertColumn(3, L"Methane Value", LVCFMT_LEFT, -1, 1);
-	mViewSensors.InsertColumn(4, L"CO Value", LVCFMT_LEFT, -1, 1);
-	mViewSensors.InsertColumn(5, L"Building Name", LVCFMT_LEFT, -1, 1);
-	mViewSensors.InsertColumn(6, L"Room Number", LVCFMT_LEFT, -1, 1);
-	mViewSensors.SetColumnWidth(0, 50);
-	mViewSensors.SetColumnWidth(1, 100);
-	mViewSensors.SetColumnWidth(2, 100);
-	mViewSensors.SetColumnWidth(3, 100);
-	mViewSensors.SetColumnWidth(4, 100);
-	mViewSensors.SetColumnWidth(5, 100);
-	mViewSensors.SetColumnWidth(6, 100);
 
 	// Loop through each record
 	while (!recset.IsEOF()) {
@@ -468,14 +396,6 @@ void CPrimeForm::FillSensorTable() {
 		// goto next record
 		recset.MoveNext();
 	}
-
-	// Close the database
-	database.Close();
-	}CATCH(CDBException, e) {
-		// If a database exception occured, show error msg
-		//AfxMessageBox("Database error: " + e→m_strError);
-	}
-	END_CATCH;
 }
 
 
@@ -574,6 +494,8 @@ int CPrimeForm::sendSMS(char const* message) {
 
 	curl_easy_cleanup(curl);
 }
+
+
 
 
 

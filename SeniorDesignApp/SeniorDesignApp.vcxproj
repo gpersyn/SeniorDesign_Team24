@@ -192,6 +192,7 @@
     <ClInclude Include="AddSensorDlg.h" />
     <ClInclude Include="AddUserDlg.h" />
     <ClInclude Include="ConfigSensorDlg.h" />
+    <ClInclude Include="DatabaseInitialization.h" />
     <ClInclude Include="DeleteSensorDlg.h" />
     <ClInclude Include="DeleteUserDlg.h" />
     <ClInclude Include="MainFrm.h" />
