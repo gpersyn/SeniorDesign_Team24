@@ -76,6 +76,9 @@ void CPrimeForm::DoDataExchange(CDataExchange* pDX)
 	mViewSensors.InsertColumn(4, L"CO Value", LVCFMT_LEFT, -1, 1);
 	mViewSensors.InsertColumn(5, L"Building Name", LVCFMT_LEFT, -1, 1);
 	mViewSensors.InsertColumn(6, L"Room Number", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(7, L"Propane Threshold", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(8, L"Methane Threshold", LVCFMT_LEFT, -1, 1);
+	mViewSensors.InsertColumn(9, L"CO Threshold", LVCFMT_LEFT, -1, 1);
 	mViewSensors.SetColumnWidth(0, 50);
 	mViewSensors.SetColumnWidth(1, 100);
 	mViewSensors.SetColumnWidth(2, 100);
@@ -83,6 +86,9 @@ void CPrimeForm::DoDataExchange(CDataExchange* pDX)
 	mViewSensors.SetColumnWidth(4, 100);
 	mViewSensors.SetColumnWidth(5, 100);
 	mViewSensors.SetColumnWidth(6, 100);
+	mViewSensors.SetColumnWidth(7, 110);
+	mViewSensors.SetColumnWidth(8, 110);
+	mViewSensors.SetColumnWidth(9, 110);
 	FillSensorTable();
 }
 
@@ -185,15 +191,18 @@ void CPrimeForm::OnAddSensor()
 {
 	int SensorID;
 	CString BuildingName;
-	int RoomNumber;
+	int RoomNumber, PropaneThreshold, MethaneThreshold, COThreshold;
 	CAddSensorDlg dlgAddSensor; //Call Add Sensor Dialog Box
 	if (dlgAddSensor.DoModal() == true) { //Only If the clicked the ok box
 		SensorID = dlgAddSensor.m_Sensor_ID;
 		BuildingName = dlgAddSensor.m_Building_Name;
 		RoomNumber = dlgAddSensor.m_Room_Number;
+		PropaneThreshold = dlgAddSensor.m_Propane_Threshold;
+		MethaneThreshold = dlgAddSensor.m_Methane_Threshold;
+		COThreshold = dlgAddSensor.m_CO_Threshold;
 		CString SqlString;
 		CString strID, strName, strAge;
-		SqlString.Format(L"INSERT INTO Sensors (ID ,Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber) VALUES (%d,'WORKING','0','0','0','%s',%d)", SensorID, BuildingName, RoomNumber);
+		SqlString.Format(L"INSERT INTO Sensors (ID ,Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber, PropaneThreshold, MethaneThreshold, COThreshold) VALUES (%d,'WORKING','0','0','0','%s',%d,%d,%d,%d)", SensorID, BuildingName, RoomNumber, PropaneThreshold, MethaneThreshold, COThreshold);
 
 		database.ExecuteSQL(SqlString); //send query
 		FillSensorTable(); //Refresh sensor table in primeview
@@ -261,22 +270,52 @@ void CPrimeForm::OnSensorsTestsensor()
 
 void CPrimeForm::OnSensorsUpdatesensors()
 {
+	//Character arrays to store incoming messages
 	char ControlBits[2]{ 1, 1};
-	char SensorID[3]{ 0, 0, 0 };
+	char SensorIDBits[3]{ 0, 0, 0 };
+	char PropaneBits[3]{ 0, 0, 0 };
+	char MethaneBits[3]{ 0, 0, 0 };
+	char COBits[3]{ 0, 0, 0 };
 	char inData[DataWidth];
-	arduino.readSerialPort(inData, MAX_DATA_LENGTH);
+	//ints 
+	int Control;
+	int SensorID;
+	int Propane;
+	int Methane;
+	int CO;
+	arduino.readSerialPort(inData, DataWidth);
 	//find start of message
-	for (int i = 0; i < (DataWidth-7); i++) {
-		if (inData[i] == 'S') {
-			for (int j = 0; j < 2; j++) {
-				ControlBits[j] = inData[i + 1 + j];
-			}
-			for (int j = 0; j < 3; j++) {
-				SensorID[j] = inData[i + 3 + j];
-			}
-			break;
+	if (inData[0] == 'S') {
+		//Read serial input
+		for (int j = 0; j <= 1; j++) {
+			ControlBits[j] = inData[1 + j];
+		}
+		for (int j = 0; j <=2 ; j++) {
+			SensorIDBits[j] = inData[3 + j];
+			PropaneBits[j] = inData[6 + j];
+			MethaneBits[j] = inData[9 + j];
+			COBits[j] = inData[12 + j];
 		}
 
+		//convert to ints
+		Control = atoi(ControlBits);
+		SensorID = atoi(SensorIDBits);
+		Propane = atoi(PropaneBits);
+		Methane = atoi(MethaneBits);
+		CO = atoi(COBits);
+
+		//Update Sensor
+		CString SqlString;
+
+		SqlString.Format(L"UPDATE Sensors SET PropaneValue = %d Where ID = %d", Propane, SensorID); //update Propane
+		database.ExecuteSQL(SqlString);
+		SqlString.Format(L"UPDATE Sensors SET MethaneValue = %d Where ID = %d", Methane, SensorID);//update Methane
+		database.ExecuteSQL(SqlString);
+		SqlString.Format(L"UPDATE Sensors SET COValue = %d Where ID = %d", CO, SensorID);//update CO
+		database.ExecuteSQL(SqlString);
+
+		//refresh sensor table
+		OnButtonRefresh();
 	}
 }
 
@@ -356,7 +395,7 @@ void CPrimeForm::ResetListControl() {
 
 void CPrimeForm::FillSensorTable() {
 	CString SqlString;
-	CString strID, strStatus, strPropaneValue, strMethaneValue, strCOValue, strBuildingName, strRoomNumber;
+	CString strID, strStatus, strPropaneValue, strMethaneValue, strCOValue, strBuildingName, strRoomNumber, strPropaneThreshold, strMethaneThreshold, strCOThreshold;
 	
 	// Allocate the recordset
 	CRecordset recset(&database);
@@ -364,7 +403,7 @@ void CPrimeForm::FillSensorTable() {
 	//Sensor Table
 
 	// Build the SQL statement
-	SqlString = "SELECT ID, Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber " "FROM Sensors";
+	SqlString = "SELECT ID, Status, PropaneValue, MethaneValue, COValue, BuildingName, RoomNumber, PropaneThreshold, MethaneThreshold, COThreshold" " FROM Sensors";
 
 	// Execute the query
 	recset.Open(CRecordset::forwardOnly,SqlString,CRecordset::readOnly);
@@ -383,6 +422,9 @@ void CPrimeForm::FillSensorTable() {
 		recset.GetFieldValue(L"COValue", strCOValue);
 		recset.GetFieldValue(L"BuildingName", strBuildingName);
 		recset.GetFieldValue(L"RoomNumber", strRoomNumber);
+		recset.GetFieldValue(L"PropaneThreshold", strPropaneThreshold);
+		recset.GetFieldValue(L"MethaneThreshold", strMethaneThreshold);
+		recset.GetFieldValue(L"COThreshold", strCOThreshold);
 
 		// Insert values into the list control
 		iRec = mViewSensors.InsertItem(0,strID,0);
@@ -392,6 +434,9 @@ void CPrimeForm::FillSensorTable() {
 		mViewSensors.SetItemText(0, 4, strCOValue);
 		mViewSensors.SetItemText(0, 5, strBuildingName);
 		mViewSensors.SetItemText(0, 6, strRoomNumber);
+		mViewSensors.SetItemText(0, 7, strPropaneThreshold);
+		mViewSensors.SetItemText(0, 8, strMethaneThreshold);
+		mViewSensors.SetItemText(0, 9, strCOThreshold);
 
 		// goto next record
 		recset.MoveNext();

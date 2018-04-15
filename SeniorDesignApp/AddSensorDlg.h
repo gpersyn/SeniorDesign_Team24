@@ -24,4 +24,7 @@ public:
 	int m_Sensor_ID;
 	CString m_Building_Name;
 	int m_Room_Number;
+	int m_Propane_Threshold;
+	int m_Methane_Threshold;
+	int m_CO_Threshold;
 };
