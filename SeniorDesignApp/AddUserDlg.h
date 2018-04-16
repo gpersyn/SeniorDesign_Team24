@@ -30,4 +30,6 @@ public:
 	int m_UserID;
 	CString m_UserPassword;
 	bool m_ADMIN_ON;
+	afx_msg void OnBnClickedRadioAdmin();
+	afx_msg void OnBnClickedRadioGeneral();
 };

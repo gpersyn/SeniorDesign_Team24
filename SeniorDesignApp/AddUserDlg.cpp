@@ -46,7 +46,21 @@ void CAddUserDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAddUserDlg, CDialogEx)
 
+	ON_BN_CLICKED(IDC_RADIO_ADMIN, &CAddUserDlg::OnBnClickedRadioAdmin)
+	ON_BN_CLICKED(IDC_RADIO_GENERAL, &CAddUserDlg::OnBnClickedRadioGeneral)
 END_MESSAGE_MAP()
 
 
 // CAddUserDlg message handlers
+
+
+void CAddUserDlg::OnBnClickedRadioAdmin()
+{
+	m_ADMIN_ON = true;
+}
+
+
+void CAddUserDlg::OnBnClickedRadioGeneral()
+{
+	m_ADMIN_ON = false;
+}

@@ -37,6 +37,8 @@ int iRec;
 #include <curl/curl.h>
 #define MAX_TWILIO_MESSAGE_SIZE 10000
 
+//for time
+#include <ctime>
 
 // CPrimeForm
 
@@ -149,7 +151,7 @@ void CPrimeForm::OnAddUser()
 		int temp_UserID = dlgAddUser.m_UserID;
 		CString temp_UserName = dlgAddUser.m_UserName;
 		CString temp_UserType;
-		if (dlgAddUser.m_ADMIN_ON) {
+		if (dlgAddUser.m_ADMIN_ON == true) {
 			temp_UserType = L"ADMIN";
 		}
 		else {
@@ -277,7 +279,8 @@ void CPrimeForm::OnSensorsUpdatesensors()
 	char MethaneBits[3]{ 0, 0, 0 };
 	char COBits[3]{ 0, 0, 0 };
 	char inData[DataWidth];
-	//ints 
+	//Converted data
+	CString sensorStatus; //Sensors old status
 	int Control;
 	int SensorID;
 	int Propane;
@@ -286,9 +289,13 @@ void CPrimeForm::OnSensorsUpdatesensors()
 	//Tresholds
 	CString strPropaneThreshold, strMethaneThreshold, strCOThreshold, Building;
 	int PropaneThreshold, MethaneThreshold, COThreshold;
+	bool overThresh = false; //tells if any sensor is overthreshold.
 	//Message
 	std::string MessageTemp = "WARNING: Dangerous gas leak in building ";
 	std::string MessageTemp2 = ". Please Evacuate immediately!";
+	std::time_t result = std::time(nullptr);
+	std::string strCurrentTime = std::ctime(&result);
+	CString CurrentTime(strCurrentTime.c_str());
 
 	arduino.readSerialPort(inData, DataWidth);
 	//find start of message
@@ -326,9 +333,10 @@ void CPrimeForm::OnSensorsUpdatesensors()
 		// Allocate the recordset
 		CRecordset recset(&database);
 		// Build the SQL statement
-		SqlString.Format(L"SELECT BuildingName, PropaneThreshold, MethaneThreshold, COThreshold" " FROM Sensors" " Where ID = %d", SensorID);
+		SqlString.Format(L"SELECT Status, BuildingName, PropaneThreshold, MethaneThreshold, COThreshold" " FROM Sensors" " Where ID = %d", SensorID);
 		// Execute the query
 		recset.Open(CRecordset::forwardOnly, SqlString, CRecordset::readOnly);
+		recset.GetFieldValue(L"Status", sensorStatus);
 		recset.GetFieldValue(L"BuildingName", Building);
 		recset.GetFieldValue(L"PropaneThreshold", strPropaneThreshold);
 		recset.GetFieldValue(L"MethaneThreshold", strMethaneThreshold);
@@ -345,38 +353,49 @@ void CPrimeForm::OnSensorsUpdatesensors()
 		if (Propane > PropaneThreshold) {
 			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
 			database.ExecuteSQL(SqlString);
-			SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1001, %d, '12:30', 'Propane value of %d is to high')", SensorID, Propane); //update Alert Status
-			database.ExecuteSQL(SqlString);
+			if (sensorStatus != "ERROR") { //This makes sure it only sends one alert message per incident
+				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1001, %d, '%s', 'Propane value of %d is to high')", SensorID, CurrentTime, Propane); //update Alert Status
+				database.ExecuteSQL(SqlString);
+			}
 
-			//Send SMS Alert
-			MessageTemp += BuildingName;//Construct Message
-			MessageTemp += MessageTemp2;
-			char const* message1 = MessageTemp.c_str();
-			int r = sendSMS(message1);
+			overThresh = true;
 		}
 		if (Methane > MethaneThreshold) {
 			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
 			database.ExecuteSQL(SqlString);
-			SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1002, %d, '12:25', 'Methane value of %d is to high')", SensorID, Methane); //update Alert Status
-			database.ExecuteSQL(SqlString);
 
-			//Send SMS Alert
-			MessageTemp += BuildingName;//Construct Message
-			MessageTemp += MessageTemp2;
-			char const* message2 = MessageTemp.c_str();
-			int t = sendSMS(message2);
+			if (sensorStatus != "ERROR") {
+				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1002, %d, '%s', 'Methane value of %d is to high')", SensorID, CurrentTime, Methane); //update Alert Status
+				database.ExecuteSQL(SqlString);
+			}
+
+			overThresh = true;
 		}
 		if (CO > COThreshold) {
 			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
 			database.ExecuteSQL(SqlString);
-			SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1003, %d, '12:45', 'CO value of %d is to high')", SensorID, CO); //update Alert Status
-			database.ExecuteSQL(SqlString);
 
-			//Send SMS Alert
-			MessageTemp += BuildingName;//Construct Message
-			MessageTemp += MessageTemp2;
-			char const* message3 = MessageTemp.c_str();
-			int y = sendSMS(message3);
+			if (sensorStatus != "ERROR") {
+				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1003, %d, '%s', 'CO value of %d is to high')", SensorID, CurrentTime, CO); //update Alert Status
+				database.ExecuteSQL(SqlString);
+			}
+
+			overThresh = true;
+		}
+
+		if (overThresh == true) { //A gas is over the threshold
+			if (sensorStatus != "ERROR") { //Send SMS Alert
+				MessageTemp += BuildingName;//Construct Message
+				MessageTemp += MessageTemp2;
+				char const* message3 = MessageTemp.c_str();
+				int y = sendSMS(message3); //send message
+			}
+		}
+		else { //Gas isn't over the threshold
+			if (sensorStatus == "ERROR") { //reset status
+				SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", SensorID); //update Sensor Status
+				database.ExecuteSQL(SqlString);
+			}
 		}
 
 		//refresh sensor table

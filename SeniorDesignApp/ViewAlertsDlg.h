@@ -21,5 +21,6 @@ public:
 	CListCtrl m_ViewAlerts;
 	afx_msg void OnBnClickedButtonRefresh();
 	void ResetListControl();
+	afx_msg void OnBnClickedButtonClearAlerts();
 };
 

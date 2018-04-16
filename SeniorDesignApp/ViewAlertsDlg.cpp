@@ -46,7 +46,7 @@ void ViewAlertsDlg::DoDataExchange(CDataExchange* pDX)
 	m_ViewAlerts.InsertColumn(3, L"ErrorInfo", LVCFMT_LEFT, -1, 1);
 	m_ViewAlerts.SetColumnWidth(0, 100);
 	m_ViewAlerts.SetColumnWidth(1, 100);
-	m_ViewAlerts.SetColumnWidth(2, 100);
+	m_ViewAlerts.SetColumnWidth(2, 150);
 	m_ViewAlerts.SetColumnWidth(3, 400);
 	OnBnClickedButtonRefresh();
 }
@@ -54,6 +54,7 @@ void ViewAlertsDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(ViewAlertsDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_REFRESH, &ViewAlertsDlg::OnBnClickedButtonRefresh)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR_ALERTS, &ViewAlertsDlg::OnBnClickedButtonClearAlerts)
 END_MESSAGE_MAP()
 
 
@@ -115,4 +116,18 @@ void ViewAlertsDlg::ResetListControl() {
 	for (int i = iNbrOfColumns-1; i >= 0; i--) {
 		m_ViewAlerts.DeleteColumn(i);
 	}
+}
+
+void ViewAlertsDlg::OnBnClickedButtonClearAlerts() //Clears Alerts
+{
+	CString SqlString;
+	// Allocate the recordset
+
+	// Build the SQL statement
+	SqlString = "DELETE FROM Alerts";
+
+	// Execute the query
+	database_Alerts.ExecuteSQL(SqlString);
+
+	OnBnClickedButtonRefresh(); //refresh table
 }
