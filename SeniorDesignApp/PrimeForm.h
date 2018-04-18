@@ -25,7 +25,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
+	virtual void OnInitialUpdate();
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnUsersViewusers();
@@ -48,6 +48,7 @@ public:
 	afx_msg void OnDebugLedswitch();
 	afx_msg void OnSensorsUpdatesensors();
 	afx_msg void OnAlertsViewalerts();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 

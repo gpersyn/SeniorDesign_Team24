@@ -39,7 +39,7 @@ static UINT indicators[] =
 CMainFrame::CMainFrame()
 {
 	//User Login
-	/*UserLoginDlg UserLogin;
+	UserLoginDlg UserLogin;
 	if (UserLogin.DoModal() == true) { //Check Username and Password
 		//User Input
 		CString UserName, UserPassword;
@@ -102,7 +102,7 @@ CMainFrame::CMainFrame()
 	}
 	else {
 		exit(0);
-	}*/
+	}
 }
 
 CMainFrame::~CMainFrame()

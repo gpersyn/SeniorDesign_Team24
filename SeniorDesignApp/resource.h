@@ -60,6 +60,7 @@
 #define IDC_BUTTON2                     1039
 #define IDC_BUTTON_READ_DATABASE_TEST   1039
 #define IDC_REFRESH_TABLE               1039
+#define IDC_BUTTON_CLEAR_ALERTS         1039
 #define IDC_LIST_SQL_TEST               1043
 #define IDC_USER_NAME                   1045
 #define IDC_LIST_DATABASE               1046
@@ -68,6 +69,7 @@
 #define IDC_EDIT_USER_PASSWORD          1050
 #define IDC_EDIT_TEST_ID                1052
 #define IDC_EDIT_PRO_THRESH             1053
+#define IDC_COMBO2                      1054
 #define ID_ADD_SENSOR                   32771
 #define ID_ADD_USER                     32772
 #define ID_DEBUG_ADDROW                 32773
@@ -98,7 +100,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32793
-#define _APS_NEXT_CONTROL_VALUE         1054
+#define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

@@ -109,8 +109,18 @@ BEGIN_MESSAGE_MAP(CPrimeForm, CFormView)
 	ON_COMMAND(ID_DEBUG_LEDSWITCH, &CPrimeForm::OnDebugLedswitch)
 	ON_COMMAND(ID_SENSORS_UPDATESENSORS, &CPrimeForm::OnSensorsUpdatesensors)
 	ON_COMMAND(ID_ALERTS_VIEWALERTS, &CPrimeForm::OnAlertsViewalerts)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
+//Timer Stuff
+void CPrimeForm::OnInitialUpdate()
+{
+	CFormView::OnInitialUpdate();
+
+	//Timer Stuff
+	SetTimer(1, 1000, NULL);
+
+}
 
 // CPrimeForm diagnostics
 
@@ -629,3 +639,12 @@ int CPrimeForm::sendSMS(char const* message) {
 
 
 
+
+
+void CPrimeForm::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: Add your message handler code here and/or call default
+	OnSensorsUpdatesensors();
+
+	CFormView::OnTimer(nIDEvent);
+}
