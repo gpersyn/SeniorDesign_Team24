@@ -22,10 +22,10 @@
 BEGIN_MESSAGE_MAP(CSeniorDesignAppApp, CWinApp)
 	ON_COMMAND(ID_APP_ABOUT, &CSeniorDesignAppApp::OnAppAbout)
 	// Standard file based document commands
-	ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
+	//ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
+	//ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
 	// Standard print setup command
-	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
+	//ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinApp::OnFilePrintSetup)
 END_MESSAGE_MAP()
 
 

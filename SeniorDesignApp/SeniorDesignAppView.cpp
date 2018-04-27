@@ -48,9 +48,9 @@ IMPLEMENT_DYNCREATE(CSeniorDesignAppView, CView)
 
 BEGIN_MESSAGE_MAP(CSeniorDesignAppView, CView)
 	// Standard printing commands
-	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	//ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
+	//ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
+	//ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND(ID_ADD_USER, &CSeniorDesignAppView::OnAddUser)
 	ON_COMMAND(ID_ADD_SENSOR, &CSeniorDesignAppView::OnAddSensor)
 	ON_COMMAND(ID_DEBUG_ADDROW, &CSeniorDesignAppView::OnDebugAddrow)

@@ -57,6 +57,9 @@ CPrimeForm::CPrimeForm()
 	// Open the database
 	database.Open(NULL, false, false, sDsn);
 
+	//Initialize variables
+	TestSensorID = 0;
+	TestCount = 0;
 }
 
 CPrimeForm::~CPrimeForm()
@@ -241,10 +244,46 @@ void CPrimeForm::OnSensorsDeleteuser() //This is acctually to delete Sensor not 
 
 void CPrimeForm::OnSensorsConfiguresensor()
 {
+	int SensorID, PropaneThreshold, MethaneThreshold, COThreshold;
+	bool SensorState;
+	CString strSensorState;
+	int intSensorState;
 	ConfigSensorDlg ConfigureSensorDialog; //Call Config Sensor Dialog Box
 	if (ConfigureSensorDialog.DoModal() == true) {
-		std:string tempInput = "01"; //This is the control bits
-		//CONTOL BITS: '00' = read, '01' = config, '10' = test
+
+		//Database Stuff
+		SensorID = ConfigureSensorDialog.m_SensorID;
+		PropaneThreshold = ConfigureSensorDialog.m_ProThresh;
+		MethaneThreshold = ConfigureSensorDialog.m_Meth_Thresh;
+		COThreshold = ConfigureSensorDialog.m_CO_Thresh;
+		SensorState = ConfigureSensorDialog.Sensor_State;
+		if (SensorState == true) {
+			strSensorState = L"WORKING";
+			intSensorState = 1; //Sensor on
+		}
+		else {
+			strSensorState = L"OFF";
+			intSensorState = 0; //Sensor off
+		}
+		//Update Sensor
+		CString SqlString;
+		//update threshold
+		SqlString.Format(L"UPDATE Sensors SET PropaneThreshold = %d Where ID = %d", PropaneThreshold, SensorID); //update Propane
+		database.ExecuteSQL(SqlString);
+		SqlString.Format(L"UPDATE Sensors SET MethaneThreshold = %d Where ID = %d", MethaneThreshold, SensorID);//update Methane
+		database.ExecuteSQL(SqlString);
+		SqlString.Format(L"UPDATE Sensors SET COThreshold = %d Where ID = %d", COThreshold, SensorID);//update CO
+		database.ExecuteSQL(SqlString);
+		//update sensor status
+		SqlString.Format(L"UPDATE Sensors SET Status = '%s' Where ID = %d", strSensorState, SensorID); //update Propane
+		database.ExecuteSQL(SqlString);
+
+		//Serial Stuff
+		std:string tempInput = "C"; //This is the control bits (C=config)
+
+		std::string tempState = std::to_string(intSensorState);
+		tempInput += tempState;
+
 		int tempID = ConfigureSensorDialog.m_SensorID;
 		std::string temp = std::to_string(tempID);
 		if (tempID < 10) { //add extra zeros to id if id is only a single digit
@@ -264,19 +303,27 @@ void CPrimeForm::OnSensorsTestsensor()
 {
 	TestSensorDlg TestSensorDialog; //Call Test Sensor Dialog Box
 	if (TestSensorDialog.DoModal() == true) {
-		std:string tempInput = "10"; //This is the control bits
+		if (TestSensorID == 0) { //if your not already testing a sensor
+		std:string tempInput = "T"; //This is the control bits (T=Test)
 		//CONTOL BITS: '00' = read, '01' = config, '10' = test
-		int tempID = TestSensorDialog.m_SensorID;
-		std::string temp = std::to_string(tempID);
-		if (tempID < 10) { //add extra zeros to id if id is only a single digit
-			tempInput += "00";
+			int tempID = TestSensorDialog.m_SensorID;
+			std::string temp = std::to_string(tempID);
+			if (tempID < 10) { //add extra zeros to id if id is only a single digit
+				tempInput += "00";
+			}
+			else if (tempID < 99) { //if id has double digits
+				tempInput += "0";
+			}
+			tempInput += temp; //add sensor id to control bits
+			const char *InputArray = tempInput.c_str();
+			arduino.writeSerialPort(InputArray, DataWidth);
+
+			TestSensorID = tempID;
+			TestCount = 30; //wait 30 seconds for response before ending test
+			CString SqlString;
+			SqlString.Format(L"UPDATE Sensors SET Status = 'TESTING' Where ID = %d", TestSensorID); //update Sensor Status
+			database.ExecuteSQL(SqlString);
 		}
-		else if (tempID < 99) { //if id has double digits
-			tempInput += "0";
-		}
-		tempInput += temp; //add sensor id to control bits
-		const char *InputArray = tempInput.c_str();
-		arduino.writeSerialPort(InputArray, DataWidth);
 	}
 }
 
@@ -394,7 +441,7 @@ void CPrimeForm::OnSensorsUpdatesensors()
 		}
 
 		if (overThresh == true) { //A gas is over the threshold
-			if (sensorStatus != "ERROR") { //Send SMS Alert
+			if (sensorStatus == "WORKING") { //Send SMS Alert
 				MessageTemp += BuildingName;//Construct Message
 				MessageTemp += MessageTemp2;
 				char const* message3 = MessageTemp.c_str();
@@ -408,8 +455,30 @@ void CPrimeForm::OnSensorsUpdatesensors()
 			}
 		}
 
+		//Test Sensor Code
+		if (TestSensorID != 0) { //we are testing a sensor
+			if (TestCount < 1) { //Sensor we are testing never responded
+				SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", TestSensorID); //update Sensor Status
+				database.ExecuteSQL(SqlString);
+				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1004, %d, '%s', 'Sensor not responding to test')", TestSensorID, CurrentTime); //update Alert Status
+				database.ExecuteSQL(SqlString);
+				TestSensorID = 0; //end test
+			}
+			else { //Still Waiting for response
+				TestCount = TestCount - 1;
+			}
+		}
+
+
+
 		//refresh sensor table
 		OnButtonRefresh();
+	}
+	else if (inData[0] == 'P') { //if sensor is pinging us back after receiving our test ping
+		CString SqlString;
+		SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", TestSensorID); //update Sensor Status
+		database.ExecuteSQL(SqlString);
+		TestSensorID = 0; //end test
 	}
 }
 
