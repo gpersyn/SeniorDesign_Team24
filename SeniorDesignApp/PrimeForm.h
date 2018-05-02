@@ -30,6 +30,8 @@ protected:
 public:
 	int TestSensorID; //id of sensor that were testing (0 if not testing)
 	int TestCount; //Seconds to wait for ping back from sensor were testing
+	int updateCount; 
+	int MaxSensorID();
 
 	afx_msg void OnUsersViewusers();
 	afx_msg void OnAddUser();

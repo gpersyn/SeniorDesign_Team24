@@ -60,6 +60,8 @@ CPrimeForm::CPrimeForm()
 	//Initialize variables
 	TestSensorID = 0;
 	TestCount = 0;
+	updateCount = 5;
+
 }
 
 CPrimeForm::~CPrimeForm()
@@ -319,7 +321,7 @@ void CPrimeForm::OnSensorsTestsensor()
 			arduino.writeSerialPort(InputArray, DataWidth);
 
 			TestSensorID = tempID;
-			TestCount = 30; //wait 30 seconds for response before ending test
+			TestCount = 10; //wait 30 seconds for response before ending test
 			CString SqlString;
 			SqlString.Format(L"UPDATE Sensors SET Status = 'TESTING' Where ID = %d", TestSensorID); //update Sensor Status
 			database.ExecuteSQL(SqlString);
@@ -354,131 +356,154 @@ void CPrimeForm::OnSensorsUpdatesensors()
 	std::string strCurrentTime = std::ctime(&result);
 	CString CurrentTime(strCurrentTime.c_str());
 
-	arduino.readSerialPort(inData, DataWidth);
-	//find start of message
-	if (inData[0] == 'S') {
-		//Read serial input
-		for (int j = 0; j <= 1; j++) {
-			ControlBits[j] = inData[1 + j];
-		}
-		for (int j = 0; j <=2 ; j++) {
-			SensorIDBits[j] = inData[3 + j];
-			PropaneBits[j] = inData[6 + j];
-			MethaneBits[j] = inData[9 + j];
-			COBits[j] = inData[12 + j];
-		}
+	for (int i = 0; i < 5; i++) {
+		arduino.readSerialPort(inData, DataWidth);
+		//find start of message
+		if (inData[0] == 'S') {
+			//Read serial input
+			for (int j = 0; j <= 1; j++) {
+				ControlBits[j] = inData[1 + j];
+			}
+			for (int j = 0; j <= 2; j++) {
+				SensorIDBits[j] = inData[3 + j];
+				PropaneBits[j] = inData[6 + j];
+				MethaneBits[j] = inData[9 + j];
+				COBits[j] = inData[12 + j];
+			}
 
-		//convert to ints
-		Control = atoi(ControlBits);
-		SensorID = atoi(SensorIDBits);
-		Propane = atoi(PropaneBits);
-		Methane = atoi(MethaneBits);
-		CO = atoi(COBits);
+			//convert to ints
+			Control = atoi(ControlBits);
+			SensorID = atoi(SensorIDBits);
+			Propane = atoi(PropaneBits);
+			Methane = atoi(MethaneBits);
+			CO = atoi(COBits);
 
-		//Update Sensor
-		CString SqlString;
+			//check if right string length
 
-		SqlString.Format(L"UPDATE Sensors SET PropaneValue = %d Where ID = %d", Propane, SensorID); //update Propane
-		database.ExecuteSQL(SqlString);
-		SqlString.Format(L"UPDATE Sensors SET MethaneValue = %d Where ID = %d", Methane, SensorID);//update Methane
-		database.ExecuteSQL(SqlString);
-		SqlString.Format(L"UPDATE Sensors SET COValue = %d Where ID = %d", CO, SensorID);//update CO
-		database.ExecuteSQL(SqlString);
 
-		//read thresholds from database
+			//Check if sensor id exists
+			int maxInt = MaxSensorID();
+			if (SensorID > maxInt) {
+				return;
+			}
 
-		// Allocate the recordset
-		CRecordset recset(&database);
-		// Build the SQL statement
-		SqlString.Format(L"SELECT Status, BuildingName, PropaneThreshold, MethaneThreshold, COThreshold" " FROM Sensors" " Where ID = %d", SensorID);
-		// Execute the query
-		recset.Open(CRecordset::forwardOnly, SqlString, CRecordset::readOnly);
-		recset.GetFieldValue(L"Status", sensorStatus);
-		recset.GetFieldValue(L"BuildingName", Building);
-		recset.GetFieldValue(L"PropaneThreshold", strPropaneThreshold);
-		recset.GetFieldValue(L"MethaneThreshold", strMethaneThreshold);
-		recset.GetFieldValue(L"COThreshold", strCOThreshold);
+			//check if gas readings are right
+			if ((Propane < 5) || (Propane > 150)) {
+				return;
+			}
+			else if ((Methane < 5) || (Methane > 150)) {
+				return;
+			}
+			else if ((CO < 5) || (CO > 150)) {
+				return;
+			}
 
-		//convert from CStrings to need type
-		PropaneThreshold = _ttoi(strPropaneThreshold);
-		MethaneThreshold = _ttoi(strMethaneThreshold);
-		COThreshold = _ttoi(strCOThreshold);
-		CT2CA pszConvertedAnsiString(Building);
+			//Update Sensor
+			CString SqlString;
+
+			SqlString.Format(L"UPDATE Sensors SET PropaneValue = %d Where ID = %d", Propane, SensorID); //update Propane
+			database.ExecuteSQL(SqlString);
+			SqlString.Format(L"UPDATE Sensors SET MethaneValue = %d Where ID = %d", Methane, SensorID);//update Methane
+			database.ExecuteSQL(SqlString);
+			SqlString.Format(L"UPDATE Sensors SET COValue = %d Where ID = %d", CO, SensorID);//update CO
+			database.ExecuteSQL(SqlString);
+
+			//read thresholds from database
+
+			// Allocate the recordset
+			CRecordset recset(&database);
+			// Build the SQL statement
+			SqlString.Format(L"SELECT Status, BuildingName, PropaneThreshold, MethaneThreshold, COThreshold" " FROM Sensors" " Where ID = %d", SensorID);
+			// Execute the query
+			recset.Open(CRecordset::forwardOnly, SqlString, CRecordset::readOnly);
+			recset.GetFieldValue(L"Status", sensorStatus);
+			recset.GetFieldValue(L"BuildingName", Building);
+			recset.GetFieldValue(L"PropaneThreshold", strPropaneThreshold);
+			recset.GetFieldValue(L"MethaneThreshold", strMethaneThreshold);
+			recset.GetFieldValue(L"COThreshold", strCOThreshold);
+
+			//convert from CStrings to need type
+			PropaneThreshold = _ttoi(strPropaneThreshold);
+			MethaneThreshold = _ttoi(strMethaneThreshold);
+			COThreshold = _ttoi(strCOThreshold);
+			CT2CA pszConvertedAnsiString(Building);
 		std:string BuildingName(pszConvertedAnsiString);
 
-		//Compare Threshold to actual value
-		if (Propane > PropaneThreshold) {
-			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
+			//Compare Threshold to actual value
+			if (Propane > PropaneThreshold) {
+				SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
+				database.ExecuteSQL(SqlString);
+				if (sensorStatus != "ERROR") { //This makes sure it only sends one alert message per incident
+					SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1001, %d, '%s', 'Propane value of %d is to high')", SensorID, CurrentTime, Propane); //update Alert Status
+					database.ExecuteSQL(SqlString);
+				}
+
+				overThresh = true;
+			}
+			if (Methane > MethaneThreshold) {
+				SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
+				database.ExecuteSQL(SqlString);
+
+				if (sensorStatus != "ERROR") {
+					SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1002, %d, '%s', 'Methane value of %d is to high')", SensorID, CurrentTime, Methane); //update Alert Status
+					database.ExecuteSQL(SqlString);
+				}
+
+				overThresh = true;
+			}
+			if (CO > COThreshold) {
+				SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
+				database.ExecuteSQL(SqlString);
+
+				if (sensorStatus != "ERROR") {
+					SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1003, %d, '%s', 'CO value of %d is to high')", SensorID, CurrentTime, CO); //update Alert Status
+					database.ExecuteSQL(SqlString);
+				}
+
+				overThresh = true;
+			}
+
+			if (overThresh == true) { //A gas is over the threshold
+				if (sensorStatus == "WORKING") { //Send SMS Alert
+					MessageTemp += BuildingName;//Construct Message
+					MessageTemp += MessageTemp2;
+					char const* message3 = MessageTemp.c_str();
+					int y = sendSMS(message3); //send message
+				}
+			}
+			else { //Gas isn't over the threshold
+				if (sensorStatus == "ERROR") { //reset status
+					SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", SensorID); //update Sensor Status
+					database.ExecuteSQL(SqlString);
+				}
+			}
+
+			//Test Sensor Code
+			if (TestSensorID != 0) { //we are testing a sensor
+				if (TestCount < 1) { //Sensor we are testing never responded
+					SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", TestSensorID); //update Sensor Status
+					database.ExecuteSQL(SqlString);
+					SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1004, %d, '%s', 'Sensor not responding to test')", TestSensorID, CurrentTime); //update Alert Status
+					database.ExecuteSQL(SqlString);
+					TestSensorID = 0; //end test
+				}
+				else { //Still Waiting for response
+					TestCount = TestCount - 1;
+				}
+			}
+
+
+
+
+			//refresh sensor table
+			OnButtonRefresh();
+		}
+		else if (inData[0] == 'P') { //if sensor is pinging us back after receiving our test ping
+			CString SqlString;
+			SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", TestSensorID); //update Sensor Status
 			database.ExecuteSQL(SqlString);
-			if (sensorStatus != "ERROR") { //This makes sure it only sends one alert message per incident
-				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1001, %d, '%s', 'Propane value of %d is to high')", SensorID, CurrentTime, Propane); //update Alert Status
-				database.ExecuteSQL(SqlString);
-			}
-
-			overThresh = true;
+			TestSensorID = 0; //end test
 		}
-		if (Methane > MethaneThreshold) {
-			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
-			database.ExecuteSQL(SqlString);
-
-			if (sensorStatus != "ERROR") {
-				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1002, %d, '%s', 'Methane value of %d is to high')", SensorID, CurrentTime, Methane); //update Alert Status
-				database.ExecuteSQL(SqlString);
-			}
-
-			overThresh = true;
-		}
-		if (CO > COThreshold) {
-			SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", SensorID); //update Sensor Status
-			database.ExecuteSQL(SqlString);
-
-			if (sensorStatus != "ERROR") {
-				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1003, %d, '%s', 'CO value of %d is to high')", SensorID, CurrentTime, CO); //update Alert Status
-				database.ExecuteSQL(SqlString);
-			}
-
-			overThresh = true;
-		}
-
-		if (overThresh == true) { //A gas is over the threshold
-			if (sensorStatus == "WORKING") { //Send SMS Alert
-				MessageTemp += BuildingName;//Construct Message
-				MessageTemp += MessageTemp2;
-				char const* message3 = MessageTemp.c_str();
-				int y = sendSMS(message3); //send message
-			}
-		}
-		else { //Gas isn't over the threshold
-			if (sensorStatus == "ERROR") { //reset status
-				SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", SensorID); //update Sensor Status
-				database.ExecuteSQL(SqlString);
-			}
-		}
-
-		//Test Sensor Code
-		if (TestSensorID != 0) { //we are testing a sensor
-			if (TestCount < 1) { //Sensor we are testing never responded
-				SqlString.Format(L"UPDATE Sensors SET Status = 'ERROR' Where ID = %d", TestSensorID); //update Sensor Status
-				database.ExecuteSQL(SqlString);
-				SqlString.Format(L"INSERT INTO Alerts (ErrorCode ,SensorID, Time, ErrorInfo ) VALUES (1004, %d, '%s', 'Sensor not responding to test')", TestSensorID, CurrentTime); //update Alert Status
-				database.ExecuteSQL(SqlString);
-				TestSensorID = 0; //end test
-			}
-			else { //Still Waiting for response
-				TestCount = TestCount - 1;
-			}
-		}
-
-
-
-		//refresh sensor table
-		OnButtonRefresh();
-	}
-	else if (inData[0] == 'P') { //if sensor is pinging us back after receiving our test ping
-		CString SqlString;
-		SqlString.Format(L"UPDATE Sensors SET Status = 'WORKING' Where ID = %d", TestSensorID); //update Sensor Status
-		database.ExecuteSQL(SqlString);
-		TestSensorID = 0; //end test
 	}
 }
 
@@ -712,8 +737,44 @@ int CPrimeForm::sendSMS(char const* message) {
 
 void CPrimeForm::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: Add your message handler code here and/or call default
-	OnSensorsUpdatesensors();
+	//for (int i = 0; i < 5; i++) {
+		OnSensorsUpdatesensors();
+		
+	//}
+
 
 	CFormView::OnTimer(nIDEvent);
+}
+
+int CPrimeForm::MaxSensorID() { //Finds max sensor value to prevent querying a sensor that doesn't exist
+	CString SqlString;
+	CString strID;
+	int intID;
+	int maxID = 0;
+	// Allocate the recordset
+	CRecordset recset(&database);
+
+	//Sensor Table
+
+	// Build the SQL statement
+	SqlString = "SELECT ID" " FROM Sensors";
+
+	// Execute the query
+	recset.Open(CRecordset::forwardOnly, SqlString, CRecordset::readOnly);
+
+	// Loop through each record
+	while (!recset.IsEOF()) {
+		// Copy each column into a variable
+		recset.GetFieldValue(L"ID", strID);
+		intID = _wtoi(strID);
+
+		if (intID > maxID) {
+			maxID = intID;
+		}
+
+		// goto next record
+		recset.MoveNext();
+	}
+
+	return maxID;
 }

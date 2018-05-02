@@ -40,10 +40,10 @@ void ViewAlertsDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_ALERTS, m_ViewAlerts);
 
 	// Column width and heading
-	m_ViewAlerts.InsertColumn(0, L"ErrorCode", LVCFMT_LEFT, -1, 0);
-	m_ViewAlerts.InsertColumn(1, L"SensorID", LVCFMT_LEFT, -1, 1);
+	m_ViewAlerts.InsertColumn(0, L"Error Code", LVCFMT_LEFT, -1, 0);
+	m_ViewAlerts.InsertColumn(1, L"Sensor ID", LVCFMT_LEFT, -1, 1);
 	m_ViewAlerts.InsertColumn(2, L"Time", LVCFMT_LEFT, -1, 1);
-	m_ViewAlerts.InsertColumn(3, L"ErrorInfo", LVCFMT_LEFT, -1, 1);
+	m_ViewAlerts.InsertColumn(3, L"Error Information", LVCFMT_LEFT, -1, 1);
 	m_ViewAlerts.SetColumnWidth(0, 100);
 	m_ViewAlerts.SetColumnWidth(1, 100);
 	m_ViewAlerts.SetColumnWidth(2, 150);
